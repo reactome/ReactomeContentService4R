@@ -1,2 +1,2 @@
-# r-data-pkg
+# reactome4
 R Interface for Reactome data
