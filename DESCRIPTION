@@ -1,0 +1,16 @@
+Package: reactome4r
+Title: R Interface for Reactome data
+Version: 0.0.0.9000
+Authors@R: person("Chi-Lam", "Poon", role = c("aut", "cre"), email = "clpoon807@gmail.com")
+Description: This is the R package for querying Reactome data.
+License: `use_mit_license()`, `use_gpl3_license()` or friends to
+    pick a license
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.0
+Suggests: 
+    testthat,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
