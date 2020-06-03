@@ -1,2 +1,2 @@
-# reactome4
+# reactome4r
 R Interface for Reactome data
