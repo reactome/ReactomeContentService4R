@@ -6,10 +6,14 @@
 \alias{reactome4r-package}
 \title{reactome4r: R Interface for Reactome data}
 \description{
-What the package does (one paragraph).
+Reactome is a free, open-source, open access, curated and peer-reviewed knowledgebase 
+             of biomolecular pathways. reactome4r provides an interface to query data from the 
+             ContentService and the Neo4j graph database in Reactome. Pre-built functions in the 
+             package would allow users to retrieve data such as proteins, complexes, pathways, etc. 
+             related to a specific gene or entity in Reactome.
 }
 \author{
-\strong{Maintainer}: Chi Lam Poon \email{clpoon807@gmail.com}
+\strong{Maintainer}: Chi-Lam Poon \email{clpoon807@gmail.com}
 
 }
 \keyword{internal}
