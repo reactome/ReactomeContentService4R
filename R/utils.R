@@ -1,8 +1,9 @@
 #' @importFrom httr GET
 
-.checkVersion <- function(obj=NULL) {
-  r <- GET('https://reactome.org/ContentService/data/database/version')
+.checkVersion <- function(url="https://reactome.org/ContentService/data/database/version") {
+  r <- GET(url)
   vs <- content(r, "text")
   vs
 }
+
 
