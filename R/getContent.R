@@ -3,18 +3,21 @@
 
 
 
-#### Person queries
+#' Person queries
 #' @param name Person’s first or/and last name
 #' @param id Person's OrcidId or DbId
-#' @param attributes Property for a specific person’s
+#' @param attributes Property for a person
 #' @param host reactome 
-#' @param path path to person
+#' @param path path to PERSON
 #' @return a list of requested information
-#' @importFrom httr GET content
+#' @examples
+#' getPerson(name="Steve", attributes=c("surname", "publications"))
+#' @importFrom httr GET content status_code
 #' @importFrom jsonlite fromJSON
+#' @rdname getPerson
 #' @export 
 
-getRtPerson <- function(name=NULL, id=NULL, attributes=NULL, 
+getPerson <- function(name=NULL, id=NULL, attributes=NULL, 
                         host="https://reactome.org", path="ContentService/data/person") {
   # ensure the input
   if (is.null(name) & is.null(id)) stop("Must specify either a name or a ID.")
@@ -34,14 +37,13 @@ getRtPerson <- function(name=NULL, id=NULL, attributes=NULL,
   if (is.null(attributes)) {
     # retrieve all info by default
     url <- file.path(host, path, id)
-    ap.url <- file.path(url, "authoredPathways")
     
     res <- GET(file.path(host, path, id))
     all.info <- fromJSON(content(res, 'text'))
     
     #### add authoredPathways or not? ####
-    ap <- fromJSON(content(GET(ap.url),'text'))
-    all.info[["authoredPathways"]] <- ap
+    ap.url <- file.path(url, "authoredPathways")
+    all.info[["authoredPathways"]] <- fromJSON(content(GET(ap.url),'text'))
   } else {
     # retrieve specified properties
     all.info <- list(Id=id)

@@ -7,7 +7,7 @@ Description: Reactome is a free, open-source, open access, curated and peer-revi
              ContentService and the Neo4j graph database in Reactome. Pre-built functions in the 
              package would allow users to retrieve data such as proteins, complexes, pathways, etc. 
              related to a specific gene or entity in Reactome.
-License: Apache License (>= 2.0)
+License: Apache License (>= 2.0) + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
