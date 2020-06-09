@@ -19,7 +19,7 @@ getPerson(
 
 \item{attributes}{Property for a person}
 
-\item{host}{reactome}
+\item{host}{Reactome (https://reactome.org)}
 
 \item{path}{path to PERSON}
 }
@@ -30,5 +30,5 @@ a list of requested information
 Person queries
 }
 \examples{
-getPerson(name="Steve Jupe", attributes=c("displayName", "publications"))
+getPerson(name="Robin Haw", attributes=c("displayName", "affiliation"))
 }
