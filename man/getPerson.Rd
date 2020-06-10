@@ -4,24 +4,14 @@
 \alias{getPerson}
 \title{Person queries}
 \usage{
-getPerson(
-  name = NULL,
-  id = NULL,
-  attributes = NULL,
-  host = "https://reactome.org",
-  path = "ContentService/data/person"
-)
+getPerson(name = NULL, id = NULL, attributes = NULL)
 }
 \arguments{
 \item{name}{Person’s first or/and last name}
 
 \item{id}{Person's OrcidId or DbId}
 
-\item{attributes}{Property for a person}
-
-\item{host}{Reactome (https://reactome.org)}
-
-\item{path}{path to PERSON}
+\item{attributes}{Property for a person. Retrieve all available attributes if it is not specified.}
 }
 \value{
 a list of requested information
