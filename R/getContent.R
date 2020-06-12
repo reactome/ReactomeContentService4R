@@ -141,7 +141,7 @@ getPerson <- function(name=NULL, id=NULL, attributes=NULL) {
 #' @param facet return faceting information or not
 #' @return all available search items
 #' @examples
-#' listSearchItems(what=c("species", "keyword"))
+#' listSearchItems(items=c("species", "keyword"))
 #' @importFrom httr GET content
 #' @importFrom jsonlite fromJSON
 #' @rdname listSearchItems

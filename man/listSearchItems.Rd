@@ -21,5 +21,5 @@ all available search items
 List the whole Reactome search items (species, types, compartments, keywords)
 }
 \examples{
-listSearchItems(what=c("species", "keyword"))
+listSearchItems(items=c("species", "keyword"))
 }
