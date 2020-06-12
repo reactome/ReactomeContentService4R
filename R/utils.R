@@ -3,8 +3,8 @@
 ## The hook function called soon after package loading
 .onLoad <- function(libname, pkgname) {
   options(base.address = "https://reactome.org/ContentService")
-
-  ### check if any Internal Server Error or something else here? ###
+  
+  ### test if any Internal Server Error or something else here? ###
 }
 
 
@@ -21,7 +21,13 @@
 .checkStatus <- function(res) {
   if (httr::status_code(res) != 200) {
     body <- jsonlite::fromJSON(content(res, "text"))
-    stop(paste0(body[["code"]], " - ", body[["messages"]]))
+    # return error message
+    if (is.na(body[["messages"]])) {
+      stop(paste0(body[["code"]], "-", body[["reason"]], ", path:", 
+                  gsub(".*?ContentService", "", body[["url"]]))) 
+    } else {
+      stop(paste0(body[["code"]], " - ", body[["messages"]]))
+    }
   }
 }
 

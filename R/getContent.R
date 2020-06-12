@@ -1,6 +1,64 @@
 ## Retrieve data from Content Service
 
 
+#' Search engines discovery schema
+#' @param ids a character vertor of event identifier(s)
+#' @return a list of the event schema
+#' @examples
+#' discover(c("R-HSA-446203", "R-HSA-73893"))
+#' @importFrom httr GET content
+#' @importFrom jsonlite fromJSON
+#' @rdname discover
+#' @export 
+
+discover <- function(ids) {
+  ### any way to ensure it's an event id? ###
+  path <- "data/discover"
+  res <- GET(file.path(getOption("base.address"), path, id))
+  .checkStatus(res)
+  fromJSON(content(res, "text"))
+}
+
+
+
+#' PhysicalEntity queries
+#' @param id physical entity id or id from resources other than Reactome
+#' @param retrieval entities to be retrieved
+#' @return a dataframe containing requested information
+#' @examples
+#' getEntities("R-HSA-5674003", "subunits")
+#' getEntities("P00533", "complexes", "UniProt")
+#' @importFrom httr GET content
+#' @importFrom jsonlite fromJSON
+#' @rdname getEntities
+#' @export 
+
+getEntities <- function(id, retrieval=c("subunits", "complexes", "componentOf", "otherForms"),
+                        resource="Reactome", subunitsExcludeStructures=TRUE) {
+  # check the inputs
+  if (length(retrieval) > 1) stop("Specify one kind of retrieval")
+  retrieval <- match.arg(retrieval)
+  if (retrieval == "complexes") {
+    if (resource == "Reactome") stop("Please use an id from other resources to retrieve complexes")
+  } else {
+    if (resource != "Reactome") stop(paste0("Please use Reactome as resource and Reactome stable or db id"))
+  }
+  
+  # retrieve
+  if (retrieval == "subunits") {
+    # id is stable or db id
+    url <- file.path(getOption("base.address"), "data/complex", id, 
+                     paste0("subunits?excludeStructures=", tolower(subunitsExcludeStructures)))
+  } else if (retrieval == "complexes") {
+    url <- file.path(getOption("base.address"), "data/complexes", resource, id)
+  } else {
+    url <- file.path(getOption("base.address"), "data/entity", id, retrieval)
+  }
+  res <- GET(url)
+  .checkStatus(res)
+  fromJSON(content(res, "text"))
+}
+
 
 
 #' Person queries
@@ -10,7 +68,7 @@
 #' @return a list of requested information
 #' @examples
 #' getPerson(name="Robin Haw", attributes=c("displayName", "affiliation"))
-#' @importFrom httr GET content status_code
+#' @importFrom httr GET content
 #' @importFrom jsonlite fromJSON
 #' @rdname getPerson
 #' @export 
@@ -59,6 +117,7 @@ getPerson <- function(name=NULL, id=NULL, attributes=NULL) {
   all.info
 }
 
+# list people in Reactome with partly or full name
 .listPeople <- function(name, ...) {
   path <- "data/people/name"
   # modify the name and write full URL
@@ -76,7 +135,7 @@ getPerson <- function(name=NULL, id=NULL, attributes=NULL) {
 
 
 #' List the whole Reactome search items (species, types, compartments, keywords)
-#' @param what categories of query
+#' @param items categories of query
 #' @param facet return faceting information or not
 #' @return all available search items
 #' @examples
@@ -86,13 +145,12 @@ getPerson <- function(name=NULL, id=NULL, attributes=NULL) {
 #' @rdname listSearchItems
 #' @export
 
-listSearchItems <- function(what=c("all", "species", "type", "compartment", "keyword"),
+listSearchItems <- function(items=c("all", "species", "type", "compartment", "keyword"),
                             facet=FALSE) {
   path <- "search/facet"
   
   # ensure inputs
-  what <- match.arg(what, several.ok = TRUE)
-  print(what)
+  items <- match.arg(items, several.ok = TRUE)
   
   # retrieve
   res <- GET(file.path(getOption("base.address"), path))
@@ -100,9 +158,9 @@ listSearchItems <- function(what=c("all", "species", "type", "compartment", "key
   list <- fromJSON(content(res, "text"))
   
   # filter
-  ifelse("all" %in% what,
+  ifelse("all" %in% items,
          select.name <- names(list),
-         select.name <- c(names(list)[1], names(list)[gsub("Facet$", "", names(list)) %in% what]))
+         select.name <- c(names(list)[1], names(list)[gsub("Facet$", "", names(list)) %in% items]))
   
   final.list <- list[select.name]
   final.list <- lapply(final.list, function(x) if (inherits(x, "list")) {x[["available"]]} else {x})
@@ -145,10 +203,13 @@ searchQuery <- function(query, filters=c(species="", types="",
   query <- gsub("\\s", "%20", query)
   url <- file.path(getOption("base.address"), paste0(path, "?query=", query))
   
+  ## add filters for the query
   for (filter in names(filters)) {
     url <- paste0(url, "&", filter, "=", gsub("\\s", "%20", filters[filter]))
   }
-  url <- paste0(url, "&cluster=", tolower(cluster))
+  ## cluster the returned data or not
+  url <- paste0(url, "&cluster=", tolower(cluster)) 
+  ## restrict rows to include
   if (!is.null(range)) url <- paste0(url, "&Start%20row=", range[1], "&rows=", range[2])
   
   # retrieve
@@ -178,7 +239,6 @@ getSpecies <- function(main=FALSE) {
   
   res <- GET(url)
   .checkStatus(res)
-  
   fromJSON(content(res, "text"))
 }
 
