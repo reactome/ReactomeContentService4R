@@ -5,12 +5,12 @@
 \title{List the whole Reactome search items (species, types, compartments, keywords)}
 \usage{
 listSearchItems(
-  what = c("all", "species", "type", "compartment", "keyword"),
+  items = c("all", "species", "type", "compartment", "keyword"),
   facet = FALSE
 )
 }
 \arguments{
-\item{what}{categories of query}
+\item{items}{categories of query}
 
 \item{facet}{return faceting information or not}
 }
