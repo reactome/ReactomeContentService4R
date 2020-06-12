@@ -15,6 +15,10 @@ getEntities(
 \item{id}{physical entity id or id from resources other than Reactome}
 
 \item{retrieval}{entities to be retrieved}
+
+\item{resource}{resource other than Reactome, e.g. UniProt, Ensembl}
+
+\item{subunitsExcludeStructures}{whether contained complexes and entity sets are excluded when retrieving subunits}
 }
 \value{
 a dataframe containing requested information

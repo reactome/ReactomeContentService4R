@@ -2,16 +2,16 @@
 
 
 #' Search engines discovery schema
-#' @param ids a character vertor of event identifier(s)
+#' @param id an event identifier
 #' @return a list of the event schema
 #' @examples
-#' discover(c("R-HSA-446203", "R-HSA-73893"))
+#' discover("R-HSA-73893")
 #' @importFrom httr GET content
 #' @importFrom jsonlite fromJSON
 #' @rdname discover
 #' @export 
 
-discover <- function(ids) {
+discover <- function(id) {
   ### any way to ensure it's an event id? ###
   path <- "data/discover"
   res <- GET(file.path(getOption("base.address"), path, id))
@@ -24,6 +24,8 @@ discover <- function(ids) {
 #' PhysicalEntity queries
 #' @param id physical entity id or id from resources other than Reactome
 #' @param retrieval entities to be retrieved
+#' @param resource resource other than Reactome, e.g. UniProt, Ensembl
+#' @param subunitsExcludeStructures whether contained complexes and entity sets are excluded when retrieving subunits
 #' @return a dataframe containing requested information
 #' @examples
 #' getEntities("R-HSA-5674003", "subunits")

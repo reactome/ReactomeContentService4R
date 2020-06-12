@@ -4,10 +4,10 @@
 \alias{discover}
 \title{Search engines discovery schema}
 \usage{
-discover(ids)
+discover(id)
 }
 \arguments{
-\item{ids}{a character vertor of event identifier(s)}
+\item{id}{an event identifier}
 }
 \value{
 a list of the event schema
@@ -16,5 +16,5 @@ a list of the event schema
 Search engines discovery schema
 }
 \examples{
-discover(c("R-HSA-446203", "R-HSA-73893"))
+discover("R-HSA-73893")
 }
