@@ -4,16 +4,27 @@
 .onLoad <- function(libname, pkgname) {
   options(base.address = "https://reactome.org/ContentService")
   
-  ### test if any Internal Server Error or something else here? ###
+  #packageStartupMessage("Connecting...", appendLF=FALSE)
+  
+  ### test the connection or something else here? ###
+  #welcome message
 }
 
 
 
 ## Check Reactome's current version
 .checkVersion <- function() {
-  r <- httr::GET(url=file.path(getOption("base.address"), "data/database/version"))
-  version <- httr::content(r, "text")
-  print(paste0("Version ", version))
+  tryCatch(
+    {
+      res <- httr::GET(url=file.path(getOption("base.address"), "data/database/version"))
+      #message("hello")
+    },
+    error = function(e) {
+      message("Reactome is not working")
+      print(e)
+    }
+  )
+  #v <- httr::content(res, "text")
 }
 
 

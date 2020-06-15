@@ -63,6 +63,151 @@ getEntities <- function(id, retrieval=c("subunits", "complexes", "componentOf", 
 
 
 
+#' EventsHierarchy queries
+#' @param species species name or taxon id
+#' @return a nested dataframe containing full event hierarchy for any given species
+#' @examples
+#' getEventsHierarchy("Caenorhabditis elegans")
+#' @importFrom httr GET content
+#' @importFrom jsonlite fromJSON
+#' @rdname getEventsHierarchy
+#' @export 
+
+getEventsHierarchy <- function(species) {
+  path <- "data/eventsHierarchy"
+  url <- file.path(getOption("base.address"), path, gsub("\\s", "%20", species))
+  res <- GET(url)
+  .checkStatus(res)
+  fromJSON(content(res, "text"))
+}
+
+
+
+#' Format exporter for events
+#' @param event.id a stable or db id of a pathway or reaction
+#' @param format either in sbgn (Systems Biology Graphical Notation) or sbml (Systems Biology Markup Language)
+#' @return content of sbgn or sbml
+#' @examples
+#' exportEvent("R-HSA-68616", "sbml")
+#' @importFrom httr GET content
+#' @rdname exportEvent
+#' @export 
+
+exportEvent <- function(event.id, format=c("sbgn", "sbml")) {
+  path <- "exporter/event"
+  format <- match.arg(format, several.ok=FALSE)
+  url <- file.path(getOption("base.address"), path, paste0(event.id, ".", format))
+  res <- GET(url)
+  .checkStatus(res)
+  content(res, "text")
+}
+
+
+
+#' Mapping related queries
+#' @param id a stable or db id of an event or entity
+#' @param resource database name other than Reactome
+#' @param species species name or taxon id or dbId
+#' @param mapTo retrieve pathways or reactions where an identifier can be mapped to
+#' @return a dataframe containing requested pathways or reactions
+#' @examples
+#' getMapping("Q7Z569", "GeneCards", "9606", "reactions")
+#' @importFrom httr GET content
+#' @importFrom jsonlite fromJSON
+#' @rdname getMapping
+#' @export 
+
+getMapping <- function(id, resource, species, mapTo=c("pathways", "reactions")) {
+  path <- "data/mapping"
+  mapTo <- match.arg(mapTo, several.ok=FALSE)
+  url <- file.path(getOption("base.address"), path, resource, 
+                   id, paste0(mapTo, "?species=", gsub("\\s", "%20", species)))
+  res <- GET(url)
+  .checkStatus(res)
+  fromJSON(content(res, "text"))
+}
+
+
+
+#' Orthology related queries
+#' @param id a stable or db id of an event or entity
+#' @param species.id the taxon id for a species
+#' @return a dataframe containing requested participants
+#' @examples
+#' getOrthology("R-HSA-5674003", "49633")
+#' @importFrom httr GET content
+#' @importFrom jsonlite fromJSON
+#' @rdname getOrthology
+#' @export 
+
+getOrthology <- function(id, species.id) {
+  path <- "data/orthology"
+  url <- file.path(getOption("base.address"), path, id, "species", species.id)
+  res <- GET(url)
+  .checkStatus(res)
+  fromJSON(content(res, "text"))
+}
+
+
+
+#' Participants queries
+#' @param event.id a stable or db id of an Event
+#' @param class retrieve all participants or PhysicalEntities or referenceEntities
+#' @return a dataframe containing requested participants
+#' @examples
+#' getParticipants("5205685", "physicalEntities")
+#' @importFrom httr GET content
+#' @importFrom jsonlite fromJSON
+#' @rdname getParticipants
+#' @export 
+
+getParticipants <- function(event.id, class=c("all", "physicalEntities", "referenceEntities")) {
+  path <- "data/participants"
+  
+  # write url
+  url <- file.path(getOption("base.address"), path, event.id)
+  class <- match.arg(class, several.ok = FALSE)
+  if (class == "physicalEntities") {
+    url <- file.path(url, "participatingPhysicalEntities")
+  } else if (class == "referenceEntities") {
+    url <- file.path(url, "referenceEntities")
+  }
+  
+  # retrieve
+  res <- GET(url)
+  .checkStatus(res)
+  fromJSON(content(res, "text"))
+}
+
+
+
+#' Pathway related queries
+#' @param id a stable or db id of a PhysicalEntity or Event present in the pathways
+#' @param species species name or taxon id
+#' @param allForms whether to return all low level pathwyas that contain the given PhysicalEntity (not Event) in all forms
+#' @return a dataframe containing requested low level pathways
+#' @examples
+#' getPathways("199420", "Homo sapiens")
+#' @importFrom httr GET content
+#' @importFrom jsonlite fromJSON
+#' @rdname getPathways
+#' @export 
+
+getPathways <- function(id, species=NULL, allForms=FALSE) {
+  path <- "data/pathways/low/entity"
+  # write the full url
+  url <- file.path(getOption("base.address"), path, id)
+  if (allForms) url <- file.path(url, "allForms")
+  if (!is.null(species)) url <- paste0(url, "?species=", gsub("\\s", "%20", species))
+  
+  # retrieve
+  res <- GET(url)
+  .checkStatus(res)
+  fromJSON(content(res, "text"))
+}
+
+
+
 #' Person queries
 #' @param name Person’s first or/and last name
 #' @param id Person's OrcidId or DbId
@@ -124,7 +269,7 @@ getPerson <- function(name=NULL, id=NULL, attributes=NULL) {
   path <- "data/people/name"
   # modify the name and write full URL
   url <- ifelse(grepl("\\s", name),
-                file.path(getOption("base.address"), path, tolower(gsub(" ", "%20", name)), "exact"),
+                file.path(getOption("base.address"), path, tolower(gsub("\\s", "%20", name)), "exact"),
                 file.path(getOption("base.address"), path, tolower(name)))
   
   res <- tryCatch(GET(url, ...), error = function(e) message("Reactome is not responding"))
@@ -175,9 +320,44 @@ listSearchItems <- function(items=c("all", "species", "type", "compartment", "ke
     names(final.list) <- gsub("Facet$", "", names(final.list))
   }
   final.list
-  ## originally I just want to retrieve all available items for c("species", "types", 
-  ## "compartments", "keywords"), a little uncertain whether the faceting information include all terms already 
-  ## since the number of species here is fewer than that from `getSpecies()`
+}
+
+
+
+#' Common data retrieval
+#' @param id a Reactome stable or db id
+#' @return a dataframe containing all reference entities for a given id
+#' @examples
+#' query("R-HSA-60140")
+#' @importFrom httr GET content
+#' @importFrom jsonlite fromJSON
+#' @rdname query
+#' @export 
+
+query <- function(id) {
+  path <- "data/query/enhanced"
+  res <- GET(file.path(getOption("base.address"), path, id))
+  .checkStatus(res)
+  fromJSON(content(res, "text"))
+}
+
+
+
+#' ReferenceEntity queries
+#' @param external.id an id from external dabatases, e.g. ChEBI, UniProt
+#' @return a dataframe containing all reference entities for a given id
+#' @examples
+#' getReferences("15377")
+#' @importFrom httr GET content
+#' @importFrom jsonlite fromJSON
+#' @rdname getReferences
+#' @export 
+
+getReferences <- function(external.id) {
+  path <- "references/mapping"
+  res <- GET(file.path(getOption("base.address"), path, external.id))
+  .checkStatus(res)
+  fromJSON(content(res, "text"))
 }
 
 
