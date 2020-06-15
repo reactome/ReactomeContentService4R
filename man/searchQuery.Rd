@@ -27,7 +27,7 @@ a list of information about the search term
 Search query
 }
 \examples{
-searchQuery("Biological oxidation", 
+searchQuery(query="Biological oxidation", 
 filters=c(species="Mus musculus", types="", compartments="", keywords=""), 
 range=c(0,20))
 }

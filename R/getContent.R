@@ -38,10 +38,9 @@ discover <- function(id) {
 getEntities <- function(id, retrieval=c("subunits", "complexes", "componentOf", "otherForms"),
                         resource="Reactome", subunitsExcludeStructures=TRUE) {
   # check the inputs
-  if (length(retrieval) > 1) stop("Specify one kind of retrieval")
-  retrieval <- match.arg(retrieval)
+  retrieval <- match.arg(retrieval, several.ok=FALSE)
   if (retrieval == "complexes") {
-    if (resource == "Reactome") stop("Please use an id from other resources to retrieve complexes")
+    if (resource == "Reactome") stop("Please use an id from other resources (e.g. UniProt, Ensembl) to retrieve complexes")
   } else {
     if (resource != "Reactome") stop(paste0("Please use Reactome as resource and Reactome stable or db id"))
   }
@@ -284,7 +283,7 @@ getPerson <- function(name=NULL, id=NULL, attributes=NULL) {
 #' List the whole Reactome search items (species, types, compartments, keywords)
 #' @param items categories of query
 #' @param facet return faceting information or not
-#' @return all available search items
+#' @return available search items
 #' @examples
 #' listSearchItems(items=c("species", "keyword"))
 #' @importFrom httr GET content
@@ -316,7 +315,7 @@ listSearchItems <- function(items=c("all", "species", "type", "compartment", "ke
   if (!facet) {
     # remove the counts
     final.list <- final.list[sapply(final.list, function(x) inherits(x, "data.frame"))]
-    final.list <- lapply(final.list, function(x) x$name)
+    final.list <- lapply(final.list, function(x) data.frame(name=x$name))
     names(final.list) <- gsub("Facet$", "", names(final.list))
   }
   final.list
@@ -369,7 +368,7 @@ getReferences <- function(external.id) {
 #' @param range start row and the nubmer of rows to include
 #' @return a list of information about the search term
 #' @examples
-#' searchQuery("Biological oxidation", 
+#' searchQuery(query="Biological oxidation", 
 #' filters=c(species="Mus musculus", types="", compartments="", keywords=""), 
 #' range=c(0,20))
 #' @importFrom httr GET content
