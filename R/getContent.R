@@ -2,21 +2,17 @@
 
 
 #' Search engines discovery schema
-#' @param id an event identifier
+#' @param event.id an event identifier
 #' @return a list of the event schema
 #' @examples
 #' discover("R-HSA-73893")
-#' @importFrom httr GET content
-#' @importFrom jsonlite fromJSON
 #' @rdname discover
-#' @export 
+#' @export
 
-discover <- function(id) {
-  ### any way to ensure it's an event id? ###
+discover <- function(event.id) {
   path <- "data/discover"
-  res <- GET(file.path(getOption("base.address"), path, id))
-  .checkStatus(res)
-  fromJSON(content(res, "text"))
+  url <- file.path(getOption("base.address"), path, event.id)
+  .retrieveData(url, as="text")
 }
 
 
@@ -30,8 +26,6 @@ discover <- function(id) {
 #' @examples
 #' getEntities("R-HSA-5674003", "subunits")
 #' getEntities("P00533", "complexes", "UniProt")
-#' @importFrom httr GET content
-#' @importFrom jsonlite fromJSON
 #' @rdname getEntities
 #' @export 
 
@@ -40,9 +34,10 @@ getEntities <- function(id, retrieval=c("subunits", "complexes", "componentOf", 
   # check the inputs
   retrieval <- match.arg(retrieval, several.ok=FALSE)
   if (retrieval == "complexes") {
-    if (resource == "Reactome") stop("Please use an id from other resources (e.g. UniProt, Ensembl) to retrieve complexes")
+    if (resource == "Reactome") stop("Please use an id from other resources (e.g. UniProt, Ensembl) 
+                                     to retrieve complexes and specify the resource that the id comes from")
   } else {
-    if (resource != "Reactome") stop(paste0("Please use Reactome as resource and Reactome stable or db id"))
+    if (resource != "Reactome") stop("Please use Reactome as resource and Reactome stable or db id")
   }
   
   # retrieve
@@ -55,29 +50,24 @@ getEntities <- function(id, retrieval=c("subunits", "complexes", "componentOf", 
   } else {
     url <- file.path(getOption("base.address"), "data/entity", id, retrieval)
   }
-  res <- GET(url)
-  .checkStatus(res)
-  fromJSON(content(res, "text"))
+  .retrieveData(url, as="text")
 }
 
 
 
 #' EventsHierarchy queries
-#' @param species species name or taxon id
+#' @param main.species name or taxon/db id or abbreviation of main species, which could be searched using `getSpecies(main=T)`
 #' @return a nested dataframe containing full event hierarchy for any given species
 #' @examples
-#' getEventsHierarchy("Caenorhabditis elegans")
-#' @importFrom httr GET content
-#' @importFrom jsonlite fromJSON
+#' getEventsHierarchy("chicken")
 #' @rdname getEventsHierarchy
 #' @export 
 
-getEventsHierarchy <- function(species) {
+getEventsHierarchy <- function(main.species) {
   path <- "data/eventsHierarchy"
-  url <- file.path(getOption("base.address"), path, gsub("\\s", "%20", species))
-  res <- GET(url)
-  .checkStatus(res)
-  fromJSON(content(res, "text"))
+  taxon.id <- .matchSpecies(main.species, "taxId")
+  url <- file.path(getOption("base.address"), path, taxon.id)
+  .retrieveData(url, as="text")
 }
 
 
@@ -88,7 +78,6 @@ getEventsHierarchy <- function(species) {
 #' @return content of sbgn or sbml
 #' @examples
 #' exportEvent("R-HSA-68616", "sbml")
-#' @importFrom httr GET content
 #' @rdname exportEvent
 #' @export 
 
@@ -96,55 +85,47 @@ exportEvent <- function(event.id, format=c("sbgn", "sbml")) {
   path <- "exporter/event"
   format <- match.arg(format, several.ok=FALSE)
   url <- file.path(getOption("base.address"), path, paste0(event.id, ".", format))
-  res <- GET(url)
-  .checkStatus(res)
-  content(res, "text")
+  .retrieveData(url, fromJSON=FALSE, as="text")
 }
 
 
 
 #' Mapping related queries
 #' @param id a stable or db id of an event or entity
-#' @param resource database name other than Reactome
-#' @param species species name or taxon id or dbId
+#' @param resource database name other than Reactome (e.g. UniProt, GeneCards)
+#' @param species name or taxon id or dbId or abbreviation of species
 #' @param mapTo retrieve pathways or reactions where an identifier can be mapped to
 #' @return a dataframe containing requested pathways or reactions
 #' @examples
-#' getMapping("Q7Z569", "GeneCards", "9606", "reactions")
-#' @importFrom httr GET content
-#' @importFrom jsonlite fromJSON
+#' getMapping("Q7Z569", "GeneCards", "human", "reactions")
 #' @rdname getMapping
 #' @export 
 
 getMapping <- function(id, resource, species, mapTo=c("pathways", "reactions")) {
   path <- "data/mapping"
   mapTo <- match.arg(mapTo, several.ok=FALSE)
+  taxon.id <- .matchSpecies(species, "taxId")
   url <- file.path(getOption("base.address"), path, resource, 
-                   id, paste0(mapTo, "?species=", gsub("\\s", "%20", species)))
-  res <- GET(url)
-  .checkStatus(res)
-  fromJSON(content(res, "text"))
+                   id, paste0(mapTo, "?species=", taxon.id))
+  .retrieveData(url, as="text")
 }
 
 
 
 #' Orthology related queries
 #' @param id a stable or db id of an event or entity
-#' @param species.id the taxon id for a species
+#' @param species name or taxon id or dbId or abbreviation of species
 #' @return a dataframe containing requested participants
 #' @examples
 #' getOrthology("R-HSA-5674003", "49633")
-#' @importFrom httr GET content
-#' @importFrom jsonlite fromJSON
 #' @rdname getOrthology
 #' @export 
 
-getOrthology <- function(id, species.id) {
+getOrthology <- function(id, species) {
   path <- "data/orthology"
+  species.id <- .matchSpecies(species, "dbId") #dbId only
   url <- file.path(getOption("base.address"), path, id, "species", species.id)
-  res <- GET(url)
-  .checkStatus(res)
-  fromJSON(content(res, "text"))
+  .retrieveData(url, as="text")
 }
 
 
@@ -155,8 +136,6 @@ getOrthology <- function(id, species.id) {
 #' @return a dataframe containing requested participants
 #' @examples
 #' getParticipants("5205685", "physicalEntities")
-#' @importFrom httr GET content
-#' @importFrom jsonlite fromJSON
 #' @rdname getParticipants
 #' @export 
 
@@ -173,22 +152,18 @@ getParticipants <- function(event.id, class=c("all", "physicalEntities", "refere
   }
   
   # retrieve
-  res <- GET(url)
-  .checkStatus(res)
-  fromJSON(content(res, "text"))
+  .retrieveData(url, as="text")
 }
 
 
 
 #' Pathway related queries
 #' @param id a stable or db id of a PhysicalEntity or Event present in the pathways
-#' @param species species name or taxon id
-#' @param allForms whether to return all low level pathwyas that contain the given PhysicalEntity (not Event) in all forms
+#' @param species name or taxon id or dbId or abbreviation of species
+#' @param allForms whether to return all low level pathways that contain the given PhysicalEntity (not Event) in all forms
 #' @return a dataframe containing requested low level pathways
 #' @examples
 #' getPathways("199420", "Homo sapiens")
-#' @importFrom httr GET content
-#' @importFrom jsonlite fromJSON
 #' @rdname getPathways
 #' @export 
 
@@ -197,12 +172,10 @@ getPathways <- function(id, species=NULL, allForms=FALSE) {
   # write the full url
   url <- file.path(getOption("base.address"), path, id)
   if (allForms) url <- file.path(url, "allForms")
-  if (!is.null(species)) url <- paste0(url, "?species=", gsub("\\s", "%20", species))
+  if (!is.null(species)) url <- paste0(url, "?species=", .matchSpecies(species, "taxId"))
   
   # retrieve
-  res <- GET(url)
-  .checkStatus(res)
-  fromJSON(content(res, "text"))
+  .retrieveData(url, as="text")
 }
 
 
@@ -214,8 +187,6 @@ getPathways <- function(id, species=NULL, allForms=FALSE) {
 #' @return a list of requested information
 #' @examples
 #' getPerson(name="Robin Haw", attributes=c("displayName", "affiliation"))
-#' @importFrom httr GET content
-#' @importFrom jsonlite fromJSON
 #' @rdname getPerson
 #' @export 
 
@@ -243,39 +214,24 @@ getPerson <- function(name=NULL, id=NULL, attributes=NULL) {
   if (is.null(attributes)) {
     # retrieve all info by default
     url <- file.path(getOption("base.address"), path, id)
-    all.info <- fromJSON(content(GET(url), 'text'))
+    all.info <- .retrieveData(url, as="text")
     
     # add authored pathways if any
     ap.url <- file.path(url, "authoredPathways")
-    authoredPathways <- fromJSON(content(GET(ap.url),'text'))
+    authoredPathways <- .retrieveData(ap.url, as="text")
     if (length(authoredPathways) != 0) all.info[["authoredPathways"]] <- authoredPathways
   } else {
     # retrieve specified properties
     all.info <- list(Id=id)
     for (attribute in attributes) {
       tmp.url <- file.path(getOption("base.address"), path, id, attribute)
-      tmp <- content(GET(tmp.url), "parse")
+      tmp <- .retrieveData(tmp.url, fromJSON=F, as="parse")
       ifelse(is.character(tmp), 
              all.info[[attribute]] <- tmp, 
-             all.info[[attribute]] <- fromJSON(content(GET(tmp.url), "text")))
+             all.info[[attribute]] <- .retrieveData(tmp.url, fromJSON=T, as="text"))
     }
   }
   all.info
-}
-
-# list people in Reactome with partly or full name
-.listPeople <- function(name, ...) {
-  path <- "data/people/name"
-  # modify the name and write full URL
-  url <- ifelse(grepl("\\s", name),
-                file.path(getOption("base.address"), path, tolower(gsub("\\s", "%20", name)), "exact"),
-                file.path(getOption("base.address"), path, tolower(name)))
-  
-  res <- tryCatch(GET(url, ...), error = function(e) message("Reactome is not responding"))
-  .checkStatus(res)
-  
-  names.df <- fromJSON(content(res, "text"))
-  names.df[ ,c(1:5)]
 }
 
 
@@ -286,8 +242,6 @@ getPerson <- function(name=NULL, id=NULL, attributes=NULL) {
 #' @return available search items
 #' @examples
 #' listSearchItems(items=c("species", "keyword"))
-#' @importFrom httr GET content
-#' @importFrom jsonlite fromJSON
 #' @rdname listSearchItems
 #' @export
 
@@ -299,9 +253,8 @@ listSearchItems <- function(items=c("all", "species", "type", "compartment", "ke
   items <- match.arg(items, several.ok = TRUE)
   
   # retrieve
-  res <- GET(file.path(getOption("base.address"), path))
-  .checkStatus(res)
-  list <- fromJSON(content(res, "text"))
+  url <- file.path(getOption("base.address"), path)
+  list <- .retrieveData(url, as="text")
   
   # filter
   ifelse("all" %in% items,
@@ -328,16 +281,13 @@ listSearchItems <- function(items=c("all", "species", "type", "compartment", "ke
 #' @return a dataframe containing all reference entities for a given id
 #' @examples
 #' query("R-HSA-60140")
-#' @importFrom httr GET content
-#' @importFrom jsonlite fromJSON
 #' @rdname query
 #' @export 
 
 query <- function(id) {
   path <- "data/query/enhanced"
-  res <- GET(file.path(getOption("base.address"), path, id))
-  .checkStatus(res)
-  fromJSON(content(res, "text"))
+  url <- file.path(getOption("base.address"), path, id)
+  .retrieveData(url, as="text")
 }
 
 
@@ -346,17 +296,14 @@ query <- function(id) {
 #' @param external.id an id from external dabatases, e.g. ChEBI, UniProt
 #' @return a dataframe containing all reference entities for a given id
 #' @examples
-#' getReferences("15377")
-#' @importFrom httr GET content
-#' @importFrom jsonlite fromJSON
+#' getReferences("15377") # ChEBI id
 #' @rdname getReferences
 #' @export 
 
 getReferences <- function(external.id) {
   path <- "references/mapping"
-  res <- GET(file.path(getOption("base.address"), path, external.id))
-  .checkStatus(res)
-  fromJSON(content(res, "text"))
+  url <- file.path(getOption("base.address"), path, external.id)
+  .retrieveData(url, as="text")
 }
 
 
@@ -371,10 +318,8 @@ getReferences <- function(external.id) {
 #' searchQuery(query="Biological oxidation", 
 #' filters=c(species="Mus musculus", types="", compartments="", keywords=""), 
 #' range=c(0,20))
-#' @importFrom httr GET content
-#' @importFrom jsonlite fromJSON
 #' @rdname searchQuery
-#' @export 
+#' @export
 
 searchQuery <- function(query, filters=c(species="", types="", 
                                          compartments="", keywords=""), 
@@ -394,9 +339,7 @@ searchQuery <- function(query, filters=c(species="", types="",
   if (!is.null(range)) url <- paste0(url, "&Start%20row=", range[1], "&rows=", range[2])
   
   # retrieve
-  res <- GET(url)
-  .checkStatus(res)
-  fromJSON(content(res, "text"))
+  .retrieveData(url, as="text")
 }
 
 
@@ -406,8 +349,6 @@ searchQuery <- function(query, filters=c(species="", types="",
 #' @return a dataframe of species information
 #' @examples
 #' getSpecies(main=TRUE)
-#' @importFrom httr GET content
-#' @importFrom jsonlite fromJSON
 #' @rdname getSpecies
 #' @export 
 
@@ -418,9 +359,5 @@ getSpecies <- function(main=FALSE) {
                 file.path(getOption("base.address"), path, "main"),
                 file.path(getOption("base.address"), path, "all"))
   
-  res <- GET(url)
-  .checkStatus(res)
-  fromJSON(content(res, "text"))
+  .retrieveData(url, as="text")
 }
-
-

@@ -9,9 +9,9 @@ getMapping(id, resource, species, mapTo = c("pathways", "reactions"))
 \arguments{
 \item{id}{a stable or db id of an event or entity}
 
-\item{resource}{database name other than Reactome}
+\item{resource}{database name other than Reactome (e.g. UniProt, GeneCards)}
 
-\item{species}{species name or taxon id or dbId}
+\item{species}{name or taxon id or dbId or abbreviation of species}
 
 \item{mapTo}{retrieve pathways or reactions where an identifier can be mapped to}
 }
@@ -22,5 +22,5 @@ a dataframe containing requested pathways or reactions
 Mapping related queries
 }
 \examples{
-getMapping("Q7Z569", "GeneCards", "9606", "reactions")
+getMapping("Q7Z569", "GeneCards", "human", "reactions")
 }

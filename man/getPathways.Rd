@@ -9,9 +9,9 @@ getPathways(id, species = NULL, allForms = FALSE)
 \arguments{
 \item{id}{a stable or db id of a PhysicalEntity or Event present in the pathways}
 
-\item{species}{species name or taxon id}
+\item{species}{name or taxon id or dbId or abbreviation of species}
 
-\item{allForms}{whether to return all low level pathwyas that contain the given PhysicalEntity (not Event) in all forms}
+\item{allForms}{whether to return all low level pathways that contain the given PhysicalEntity (not Event) in all forms}
 }
 \value{
 a dataframe containing requested low level pathways

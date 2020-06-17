@@ -4,12 +4,12 @@
 \alias{getOrthology}
 \title{Orthology related queries}
 \usage{
-getOrthology(id, species.id)
+getOrthology(id, species)
 }
 \arguments{
 \item{id}{a stable or db id of an event or entity}
 
-\item{species.id}{the taxon id for a species}
+\item{species}{name or taxon id or dbId or abbreviation of species}
 }
 \value{
 a dataframe containing requested participants

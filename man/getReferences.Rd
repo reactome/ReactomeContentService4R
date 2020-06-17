@@ -16,5 +16,5 @@ a dataframe containing all reference entities for a given id
 ReferenceEntity queries
 }
 \examples{
-getReferences("15377")
+getReferences("15377") # ChEBI id
 }

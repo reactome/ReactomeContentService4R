@@ -4,10 +4,10 @@
 \alias{getEventsHierarchy}
 \title{EventsHierarchy queries}
 \usage{
-getEventsHierarchy(species)
+getEventsHierarchy(main.species)
 }
 \arguments{
-\item{species}{species name or taxon id}
+\item{main.species}{name or taxon/db id or abbreviation of main species, which could be searched using \code{getSpecies(main=T)}}
 }
 \value{
 a nested dataframe containing full event hierarchy for any given species
@@ -16,5 +16,5 @@ a nested dataframe containing full event hierarchy for any given species
 EventsHierarchy queries
 }
 \examples{
-getEventsHierarchy("Caenorhabditis elegans")
+getEventsHierarchy("chicken")
 }

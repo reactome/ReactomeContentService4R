@@ -4,10 +4,10 @@
 \alias{discover}
 \title{Search engines discovery schema}
 \usage{
-discover(id)
+discover(event.id)
 }
 \arguments{
-\item{id}{an event identifier}
+\item{event.id}{an event identifier}
 }
 \value{
 a list of the event schema
