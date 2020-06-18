@@ -54,7 +54,7 @@
 ## match species names & ids
 ## e.g. 
 ## .matchSpecies("cow", "taxId")
-## .matchSpecies("HPV", c("taxId", "abbreviation"))
+## .matchSpecies("HPV", c("displayName", "taxId"))
 .matchSpecies <- function(species, output=c("displayName", "dbId", "taxId", "abbreviation")) {
   # arg species could be name, dbID, taxonID, or abbreviation
   
@@ -62,25 +62,27 @@
   output <- match.arg(output, several.ok = TRUE)
   species <- as.character(species)
   all.species <- reactome4r::getSpecies() ### store in a local file may be better ###
+  all.species <- all.species[ ,c(1:5)]
   
   # to see it's a name or id or abbr.
-  type <- NULL
-  type <- colnames(all.species)[apply(all.species, 2, function(x) species %in% unlist(x))]
-  if (is.null(type)) stop("Please input a species listed in Reactome, also can find more information using `getSpecies()`")
+  species.data.type <- colnames(all.species)[apply(all.species, 2, function(x) species %in% unlist(x))]
+  if (length(species.data.type) == 0) stop("Please input a species listed in Reactome, 
+                                           also can find more information using `getSpecies()`")
 
   # output
-  type <- type[1] # in case type==c("displayName","name")
-  if (type == "name") {
+  species.data.type <- species.data.type[1] # in case type==c("displayName","name")
+  if (species.data.type == "name") {
     species.row <- all.species[unlist(lapply(all.species$name, function(x) species %in% x)), ]
   } else {
-    species.row <- all.species[all.species[[type]] == species, ] 
+    species.row <- all.species[all.species[[species.data.type]] == species, ] 
   }
 
   if (nrow(species.row) > 1) {
     warning("This species is not unique, please use IDs or full name instead")
-    print(species.row[, c(1:5)])
+    return(species.row)
+  } else {
+    return(species.row[ ,output])
   }
-  species.row[, output]
 }
 
 
@@ -111,6 +113,5 @@ spellCheck <- function(query) {
   url <- file.path(getOption("base.address"), paste0(path, "?query=", query))
   .retrieveData(url, as="text")
 }
-
 
 

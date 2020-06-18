@@ -21,5 +21,5 @@ a dataframe containing requested participants
 Participants queries
 }
 \examples{
-getParticipants("5205685", "physicalEntities")
+getParticipants("R-HSA-5205685", "physicalEntities")
 }

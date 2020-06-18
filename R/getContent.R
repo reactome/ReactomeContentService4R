@@ -2,7 +2,7 @@
 
 
 #' Search engines discovery schema
-#' @param event.id an event identifier
+#' @param event.id stable id or db id of an event
 #' @return a list of the event schema
 #' @examples
 #' discover("R-HSA-73893")
@@ -18,7 +18,7 @@ discover <- function(event.id) {
 
 
 #' PhysicalEntity queries
-#' @param id physical entity id or id from resources other than Reactome
+#' @param id stable or db id of a Reactome physical entity, or id from resources other than Reactome
 #' @param retrieval entities to be retrieved
 #' @param resource resource other than Reactome, e.g. UniProt, Ensembl
 #' @param subunitsExcludeStructures whether contained complexes and entity sets are excluded when retrieving subunits
@@ -30,14 +30,15 @@ discover <- function(event.id) {
 #' @export 
 
 getEntities <- function(id, retrieval=c("subunits", "complexes", "componentOf", "otherForms"),
-                        resource="Reactome", subunitsExcludeStructures=TRUE) {
+                        resource="Reactome", subunitsExcludeStructures=FALSE) {
   # check the inputs
   retrieval <- match.arg(retrieval, several.ok=FALSE)
-  if (retrieval == "complexes") {
-    if (resource == "Reactome") stop("Please use an id from other resources (e.g. UniProt, Ensembl) 
-                                     to retrieve complexes and specify the resource that the id comes from")
-  } else {
-    if (resource != "Reactome") stop("Please use Reactome as resource and Reactome stable or db id")
+  if (retrieval == "complexes" && resource == "Reactome") {
+    stop("Please use an id from other resources (e.g. UniProt, Ensembl) 
+         to retrieve complexes and specify the resource that the id comes from")
+  }
+  if (retrieval != "complexes" && resource != "Reactome") {
+    stop("Please use Reactome as resource and specify a Reactome stable or db id")
   }
   
   # retrieve
@@ -57,7 +58,7 @@ getEntities <- function(id, retrieval=c("subunits", "complexes", "componentOf", 
 
 #' EventsHierarchy queries
 #' @param main.species name or taxon/db id or abbreviation of main species, which could be searched using `getSpecies(main=T)`
-#' @return a nested dataframe containing full event hierarchy for any given species
+#' @return a nested dataframe containing full event hierarchy for any given main species
 #' @examples
 #' getEventsHierarchy("chicken")
 #' @rdname getEventsHierarchy
@@ -117,7 +118,7 @@ getMapping <- function(id, resource, species, mapTo=c("pathways", "reactions")) 
 #' @param species name or taxon id or dbId or abbreviation of species
 #' @return a dataframe containing requested participants
 #' @examples
-#' getOrthology("R-HSA-5674003", "49633")
+#' getOrthology("R-HSA-5674003", "Sus scrofa")
 #' @rdname getOrthology
 #' @export 
 
@@ -135,7 +136,7 @@ getOrthology <- function(id, species) {
 #' @param class retrieve all participants or PhysicalEntities or referenceEntities
 #' @return a dataframe containing requested participants
 #' @examples
-#' getParticipants("5205685", "physicalEntities")
+#' getParticipants("R-HSA-5205685", "physicalEntities")
 #' @rdname getParticipants
 #' @export 
 
@@ -163,7 +164,7 @@ getParticipants <- function(event.id, class=c("all", "physicalEntities", "refere
 #' @param allForms whether to return all low level pathways that contain the given PhysicalEntity (not Event) in all forms
 #' @return a dataframe containing requested low level pathways
 #' @examples
-#' getPathways("199420", "Homo sapiens")
+#' getPathways("R-HSA-199420", "Homo sapiens")
 #' @rdname getPathways
 #' @export 
 
@@ -182,8 +183,8 @@ getPathways <- function(id, species=NULL, allForms=FALSE) {
 
 #' Person queries
 #' @param name Person’s first or/and last name
-#' @param id Person's OrcidId or DbId
-#' @param attributes Property for a person. Retrieve all available attributes if it is not specified.
+#' @param id Person's Orcid Id or DbId
+#' @param attributes Property for a person. Return all available attributes if it is not specified.
 #' @return a list of requested information
 #' @examples
 #' getPerson(name="Robin Haw", attributes=c("displayName", "affiliation"))
@@ -277,7 +278,7 @@ listSearchItems <- function(items=c("all", "species", "type", "compartment", "ke
 
 
 #' Common data retrieval
-#' @param id a Reactome stable or db id
+#' @param id a stable or db id of a Reactome entry
 #' @return a dataframe containing all reference entities for a given id
 #' @examples
 #' query("R-HSA-60140")

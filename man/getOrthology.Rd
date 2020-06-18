@@ -18,5 +18,5 @@ a dataframe containing requested participants
 Orthology related queries
 }
 \examples{
-getOrthology("R-HSA-5674003", "49633")
+getOrthology("R-HSA-5674003", "Sus scrofa")
 }

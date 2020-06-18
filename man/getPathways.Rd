@@ -20,5 +20,5 @@ a dataframe containing requested low level pathways
 Pathway related queries
 }
 \examples{
-getPathways("199420", "Homo sapiens")
+getPathways("R-HSA-199420", "Homo sapiens")
 }

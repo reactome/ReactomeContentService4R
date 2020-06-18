@@ -7,7 +7,7 @@
 query(id)
 }
 \arguments{
-\item{id}{a Reactome stable or db id}
+\item{id}{a stable or db id of a Reactome entry}
 }
 \value{
 a dataframe containing all reference entities for a given id

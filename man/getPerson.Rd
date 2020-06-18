@@ -9,9 +9,9 @@ getPerson(name = NULL, id = NULL, attributes = NULL)
 \arguments{
 \item{name}{Person’s first or/and last name}
 
-\item{id}{Person's OrcidId or DbId}
+\item{id}{Person's Orcid Id or DbId}
 
-\item{attributes}{Property for a person. Retrieve all available attributes if it is not specified.}
+\item{attributes}{Property for a person. Return all available attributes if it is not specified.}
 }
 \value{
 a list of requested information

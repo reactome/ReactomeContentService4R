@@ -10,7 +10,7 @@ getEventsHierarchy(main.species)
 \item{main.species}{name or taxon/db id or abbreviation of main species, which could be searched using \code{getSpecies(main=T)}}
 }
 \value{
-a nested dataframe containing full event hierarchy for any given species
+a nested dataframe containing full event hierarchy for any given main species
 }
 \description{
 EventsHierarchy queries
