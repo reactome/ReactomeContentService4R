@@ -116,7 +116,7 @@ getMapping <- function(id, resource, species, mapTo=c("pathways", "reactions")) 
 #' Orthology related queries
 #' @param id a stable or db id of an event or entity
 #' @param species name or taxon id or dbId or abbreviation of species
-#' @return a dataframe containing requested participants
+#' @return a list containing the orthology for given event or entity in the specified species
 #' @examples
 #' getOrthology("R-HSA-5674003", "Sus scrofa")
 #' @rdname getOrthology
@@ -133,7 +133,7 @@ getOrthology <- function(id, species) {
 
 #' Participants queries
 #' @param event.id a stable or db id of an Event
-#' @param class retrieve all participants or PhysicalEntities or referenceEntities
+#' @param class to retrieve all participants or PhysicalEntities or referenceEntities
 #' @return a dataframe containing requested participants
 #' @examples
 #' getParticipants("R-HSA-5205685", "physicalEntities")
@@ -279,7 +279,7 @@ listSearchItems <- function(items=c("all", "species", "type", "compartment", "ke
 
 #' Common data retrieval
 #' @param id a stable or db id of a Reactome entry
-#' @return a dataframe containing all reference entities for a given id
+#' @return a list containing comprehensive information for a given id
 #' @examples
 #' query("R-HSA-60140")
 #' @rdname query
@@ -297,7 +297,7 @@ query <- function(id) {
 #' @param external.id an id from external dabatases, e.g. ChEBI, UniProt
 #' @return a dataframe containing all reference entities for a given id
 #' @examples
-#' getReferences("15377") # ChEBI id
+#' getReferences("15377") #ChEBI id
 #' @rdname getReferences
 #' @export 
 
@@ -312,7 +312,7 @@ getReferences <- function(external.id) {
 #' Search query
 #' @param query search term
 #' @param filters filter conditions
-#' @param cluster cluter returned data or not
+#' @param cluster cluster returned data or not
 #' @param range start row and the nubmer of rows to include
 #' @return a list of information about the search term
 #' @examples
