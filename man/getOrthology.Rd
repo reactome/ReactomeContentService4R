@@ -12,7 +12,7 @@ getOrthology(id, species)
 \item{species}{name or taxon id or dbId or abbreviation of species}
 }
 \value{
-a dataframe containing requested participants
+a list containing the orthology for given event or entity in the specified species
 }
 \description{
 Orthology related queries

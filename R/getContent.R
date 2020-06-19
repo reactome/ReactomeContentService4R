@@ -313,7 +313,7 @@ getReferences <- function(external.id) {
 #' @param query search term
 #' @param filters filter conditions
 #' @param cluster cluster returned data or not
-#' @param range start row and the nubmer of rows to include
+#' @param range start row and the number of rows to include
 #' @return a list of information about the search term
 #' @examples
 #' searchQuery(query="Biological oxidation", 

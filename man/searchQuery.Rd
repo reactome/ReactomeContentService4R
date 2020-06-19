@@ -16,9 +16,9 @@ searchQuery(
 
 \item{filters}{filter conditions}
 
-\item{cluster}{cluter returned data or not}
+\item{cluster}{cluster returned data or not}
 
-\item{range}{start row and the nubmer of rows to include}
+\item{range}{start row and the number of rows to include}
 }
 \value{
 a list of information about the search term

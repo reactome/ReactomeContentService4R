@@ -62,10 +62,12 @@
   output <- match.arg(output, several.ok = TRUE)
   species <- as.character(species)
   all.species <- reactome4r::getSpecies() ### store in a local file may be better ###
-  all.species <- all.species[ ,c(1:5)]
   
-  # to see it's a name or id or abbr.
-  species.data.type <- colnames(all.species)[apply(all.species, 2, function(x) species %in% unlist(x))]
+  # no need to use schemaClass & className; left with "dbId","displayName","name","taxId","abbreviation"
+  all.species <- all.species[ ,which(!colnames(all.species) %in% c("schemaClass", "className"))]
+  
+  # to see what data type this species arg is by checking which column it belongs to
+  species.data.type <- colnames(all.species)[apply(all.species, 2, function(col) species %in% unlist(col))]
   if (length(species.data.type) == 0) stop("Please input a species listed in Reactome, 
                                            also can find more information using `getSpecies()`")
 
@@ -95,7 +97,8 @@
                 file.path(getOption("base.address"), path, tolower(name)))
   
   names.df <- .retrieveData(url, as="text")
-  names.df[ ,c(1:5)]
+  # no need to present schemaClass & className, left with dbId,displayName,firstname,initial,orcidId
+  names.df[ ,which(!colnames(names.df) %in% c("schemaClass", "className"))]
 }
 
 

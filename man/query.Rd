@@ -10,7 +10,7 @@ query(id)
 \item{id}{a stable or db id of a Reactome entry}
 }
 \value{
-a dataframe containing all reference entities for a given id
+a list containing comprehensive information for a given id
 }
 \description{
 Common data retrieval

@@ -12,7 +12,7 @@ getParticipants(
 \arguments{
 \item{event.id}{a stable or db id of an Event}
 
-\item{class}{retrieve all participants or PhysicalEntities or referenceEntities}
+\item{class}{to retrieve all participants or PhysicalEntities or referenceEntities}
 }
 \value{
 a dataframe containing requested participants
