@@ -15,7 +15,7 @@ listSearchItems(
 \item{facet}{return faceting information or not}
 }
 \value{
-all available search items
+available search items
 }
 \description{
 List the whole Reactome search items (species, types, compartments, keywords)

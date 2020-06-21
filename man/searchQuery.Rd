@@ -16,9 +16,9 @@ searchQuery(
 
 \item{filters}{filter conditions}
 
-\item{cluster}{cluter returned data or not}
+\item{cluster}{cluster returned data or not}
 
-\item{range}{start row and the nubmer of rows to include}
+\item{range}{start row and the number of rows to include}
 }
 \value{
 a list of information about the search term
@@ -27,7 +27,7 @@ a list of information about the search term
 Search query
 }
 \examples{
-searchQuery("Biological oxidation", 
+searchQuery(query="Biological oxidation", 
 filters=c(species="Mus musculus", types="", compartments="", keywords=""), 
 range=c(0,20))
 }

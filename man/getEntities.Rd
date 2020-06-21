@@ -8,11 +8,11 @@ getEntities(
   id,
   retrieval = c("subunits", "complexes", "componentOf", "otherForms"),
   resource = "Reactome",
-  subunitsExcludeStructures = TRUE
+  subunitsExcludeStructures = FALSE
 )
 }
 \arguments{
-\item{id}{physical entity id or id from resources other than Reactome}
+\item{id}{stable or db id of a Reactome physical entity, or id from resources other than Reactome}
 
 \item{retrieval}{entities to be retrieved}
 
