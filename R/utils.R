@@ -1,28 +1,21 @@
 # helper functions
 
-## The hook function called soon after package loading
-.onLoad <- function(libname, pkgname) {
+## hook for namespace
+.onAttach <- function(libname, pkgname) {
   options(base.address = "https://reactome.org/ContentService")
-  
-  #packageStartupMessage("Connecting...", appendLF=FALSE)
-  
-  ### test the connection or something else here? ###
-  #welcome message
+  # welcome message
+  packageStartupMessage("Connecting...", appendLF=FALSE)
+  v <- .checkVersion()
+  packageStartupMessage(paste0("welcome to Reactome v", v, "!"))
 }
 
 
 
 ## Check Reactome's current version
 .checkVersion <- function() {
-  tryCatch(
-    {
-      res <- httr::GET(url=file.path(getOption("base.address"), "data/database/version"))
-    },
-    error = function(e) {
-      message("Reactome is not available")
-    }
-  )
-  #v <- httr::content(res, "text")
+  url <- file.path(getOption("base.address"), "data/database/version")
+  v <- .retrieveData(url, fromJSON = F, as = "text")
+  v
 }
 
 
@@ -32,10 +25,10 @@
     body <- jsonlite::fromJSON(httr::content(res, "text"))
     # return error message
     if (is.na(body[["messages"]])) {
-      stop(paste0(body[["code"]], "-", body[["reason"]], ", path:", 
+      stop(paste0("HTTP ", body[["code"]], "-", body[["reason"]], ", path:", 
                   gsub(".*?ContentService", "", body[["url"]]))) 
     } else {
-      stop(paste0(body[["code"]], " - ", body[["messages"]]))
+      stop(paste0("HTTP ", body[["code"]], " - ", body[["messages"]]))
     }
   }
 }
@@ -43,11 +36,20 @@
 
 ## retrieve data
 .retrieveData <- function(url, fromJSON=TRUE, ...) {
-  res <- httr::GET(url)
-  .checkStatus(res)
-  data <- httr::content(res, ...)
-  if (fromJSON) data <- jsonlite::fromJSON(data)
-  data
+  tryCatch(
+    expr = {
+      res <- httr::GET(url)
+      .checkStatus(res)
+      data <- httr::content(res, ...)
+      if (fromJSON) data <- jsonlite::fromJSON(data)
+      return(data)
+    },
+    error = function(e) {
+      # catch error of GET
+      message("Reactome is not responding. Please attach the package first.")
+      message(e)
+    }
+  )
 }
 
 
@@ -61,7 +63,7 @@
   # ensure correct input
   output <- match.arg(output, several.ok = TRUE)
   species <- as.character(species)
-  all.species <- reactome4r::getSpecies() ### store in a local file may be better ###
+  all.species <- getSpecies() ### store in a local file may be better ###
   
   # no need to use schemaClass & className; left with "dbId","displayName","name","taxId","abbreviation"
   all.species <- all.species[ ,which(!colnames(all.species) %in% c("schemaClass", "className"))]
@@ -89,7 +91,7 @@
 
 
 ## list people in Reactome with partly or full name
-.listPeople <- function(name, ...) {
+.listPeople <- function(name) {
   path <- "data/people/name"
   # modify the name and write full URL
   url <- ifelse(grepl("\\s", name),

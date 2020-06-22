@@ -60,7 +60,8 @@ getEntities <- function(id, retrieval=c("subunits", "complexes", "componentOf", 
 #' @param main.species name or taxon/db id or abbreviation of main species, which could be searched using `getSpecies(main=T)`
 #' @return a nested dataframe containing full event hierarchy for any given main species
 #' @examples
-#' getEventsHierarchy("chicken")
+#' #getEventsHierarchy("chicken")
+#' #getEventsHierarchy("XTR")
 #' @rdname getEventsHierarchy
 #' @export 
 
@@ -69,24 +70,6 @@ getEventsHierarchy <- function(main.species) {
   taxon.id <- .matchSpecies(main.species, "taxId")
   url <- file.path(getOption("base.address"), path, taxon.id)
   .retrieveData(url, as="text")
-}
-
-
-
-#' Format exporter for events
-#' @param event.id a stable or db id of a pathway or reaction
-#' @param format either in sbgn (Systems Biology Graphical Notation) or sbml (Systems Biology Markup Language)
-#' @return content of sbgn or sbml
-#' @examples
-#' exportEvent("R-HSA-68616", "sbml")
-#' @rdname exportEvent
-#' @export 
-
-exportEvent <- function(event.id, format=c("sbgn", "sbml")) {
-  path <- "exporter/event"
-  format <- match.arg(format, several.ok=FALSE)
-  url <- file.path(getOption("base.address"), path, paste0(event.id, ".", format))
-  .retrieveData(url, fromJSON=FALSE, as="text")
 }
 
 

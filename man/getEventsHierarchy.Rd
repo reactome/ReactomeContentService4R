@@ -16,5 +16,6 @@ a nested dataframe containing full event hierarchy for any given main species
 EventsHierarchy queries
 }
 \examples{
-getEventsHierarchy("chicken")
+#getEventsHierarchy("chicken")
+#getEventsHierarchy("XTR")
 }
