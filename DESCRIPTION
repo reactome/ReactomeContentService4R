@@ -17,6 +17,7 @@ Imports:
     jsonlite,
     magick
 Suggests: 
+    pdftools,
     testthat,
     knitr,
     rmarkdown
