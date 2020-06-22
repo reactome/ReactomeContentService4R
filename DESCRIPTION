@@ -1,0 +1,22 @@
+Package: reactome4r
+Title: R Interface for Reactome data
+Version: 0.0.0.9000
+Authors@R: person("Chi-Lam", "Poon", role = c("aut", "cre"), email = "clpoon807@gmail.com")
+Description: Reactome is a free, open-source, open access, curated and peer-reviewed 
+    knowledgebase of biomolecular pathways. reactome4r provides an interface to query Reactome 
+    data from the ContentService and the Neo4j graph database. Pre-built functions in the 
+    package would allow users to retrieve data such as proteins, complexes, pathways, which 
+    are related to a specific gene or entity in Reactome.
+License: file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.0
+Imports:
+    httr,
+    jsonlite
+Suggests: 
+    testthat,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
