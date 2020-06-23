@@ -79,7 +79,7 @@ exportImage <- function(id=NULL, output=c("diagram", "fireworks", "reaction"),
   output <- match.arg(output, several.ok=FALSE)
   format <- match.arg(format, several.ok=FALSE)
   
-  args <- as.list(environment()) #collect arguments except dots
+  args <- c(as.list(environment()), list(...)) #collect arguments
   if (output == "fireworks") id <- .matchSpecies(species, "taxId") #replace id with taxon id
   
   # add path and quality parameter to url
@@ -88,15 +88,15 @@ exportImage <- function(id=NULL, output=c("diagram", "fireworks", "reaction"),
   # add other parameters to url
   boolean.args <- sapply(args, is.logical) #turn boolean arguments into lower case characters
   args[boolean.args] <- lapply(args[boolean.args], tolower)
-  args <- args[!names(args) %in% c("id", "output", "species", "format", "quality", "file")]
+  args <- args[!names(args) %in% c("id", "output", "species", "format", "quality", "file", names(list(...)))]
   
   if (output != "diagram") args <- args[names(args) != "ehld"]
-  ifelse(output == "fireworks", 
+  ifelse(output == "fireworks",
          args <- args[names(args) != "analysisProfile"],
          args <- args[names(args) != "fireworksCoverage"])
   # concatenate specified parameters
   for (arg in names(args)) {
-    if (!is.null(args[[arg]])) url <- paste0(url, "&", arg, "=", args[[arg]]) 
+    if (!is.null(args[[arg]])) url <- paste0(url, "&", arg, "=", args[[arg]])
   }
   
   # get image using magick package

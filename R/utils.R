@@ -20,33 +20,38 @@
 
 
 ## Check the status of http response
-.checkStatus <- function(res) {
+.checkStatus <- function(res, customizedMsg=NULL) {
   if (httr::status_code(res) != 200) {
     body <- jsonlite::fromJSON(httr::content(res, "text"))
+    # print customized message
+    if (!is.null(customizedMsg)) message(paste0(customizedMsg,"\n"))
+    
     # return error message
     if (is.na(body[["messages"]])) {
       stop(paste0("HTTP ", body[["code"]], "-", body[["reason"]], ", path:", 
-                  gsub(".*?ContentService", "", body[["url"]]))) 
+                  gsub(".*?ContentService", "", body[["url"]]), "\n")) 
     } else {
-      stop(paste0("HTTP ", body[["code"]], " - ", body[["messages"]]))
+      stop(paste0("HTTP ", body[["code"]], " - ", body[["messages"]]), "\n")
     }
   }
 }
 
 
 ## retrieve data
-.retrieveData <- function(url, fromJSON=TRUE, ...) {
+.retrieveData <- function(url, customizedMsg=NULL, fromJSON=TRUE, ...) {
   tryCatch(
     expr = {
       res <- httr::GET(url)
-      .checkStatus(res)
+      .checkStatus(res, customizedMsg=customizedMsg)
       data <- httr::content(res, ...)
       if (fromJSON) data <- jsonlite::fromJSON(data)
       return(data)
     },
     error = function(e) {
       # catch error of GET
-      message("Reactome is not responding. Please attach the package first.")
+      if (!"reactome4r" %in% (.packages())) {
+        message("Reactome is not responding. Remember to attach the package first.") 
+      }
       message(e)
     }
   )

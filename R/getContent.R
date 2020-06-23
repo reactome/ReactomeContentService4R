@@ -292,6 +292,79 @@ getReferences <- function(external.id) {
 
 
 
+#' Schema class queries
+#' @param class schema class name, details see \href{https://reactome.org/content/schema/DatabaseObject}{Reactome data schema}
+#' @param species name or taxon id or dbId or abbreviation of species. Only Event or PhysicalEntity class can specify species
+#' @param all to return all entries or not, default is \code{FALSE}
+#' @param rows the number of rows of entries retrieved, default is 1000
+#' @param minimised to retrieve simplified entries (db id, stable id, displayName, type) or not, default is \code{FALSE}
+#' @param reference to retrieve simplified reference objects (db id, external identifier, 
+#' external database name) or not, default is \code{FALSE}. Only for ReferenceEntity or ExternalOntology class
+#' @return a sorted dataframe containing entries that belong to the specified schema class
+#' @examples
+#' getSchemaClass(class="Drug", all=TRUE)
+#' # getSchemaClass("Regulation", rows=2000, minimised=T)
+#' # getSchemaClass("Complex", species="pig", rows=100)
+#' @importFrom data.table rbindlist
+#' @rdname getSchemaClass
+#' @export 
+
+getSchemaClass <- function(class, species=NULL, all=FALSE, rows=1000,
+                           minimised=FALSE, reference=FALSE) {
+  path <- "data/schema"
+  url <- file.path(getOption("base.address"), path, class)
+  
+  # get the count first
+  cnt.url <- file.path(url, "count")
+  if (!is.null(species)) {
+    species.id <- .matchSpecies(species, "taxId")
+    cnt.url <- paste0(cnt.url, "?species=", species.id)
+  }
+  msg <- 'Please note that if "species" is specified, "class" needs to be an instance of Event or PhysicalEntity'
+  all.cnt <- as.integer(.retrieveData(cnt.url, customizedMsg=msg, fromJSON=F, as="text"))
+  if (length(all.cnt) == 0) stop("as above", call.=F)
+  
+  # set the range of entries
+  if (all) rows <- all.cnt
+  if (!all && rows > all.cnt) rows <- all.cnt
+
+  cat(paste0("Total ", all.cnt, " ", class, " entries, retrieving ", format(rows, scientific=F), " of them...\n"))
+  
+  #  calculate the range of pages
+  offset <- ifelse(!minimised && !reference, 25, 20000)
+  end.page <- ceiling(rows / offset) #round it up
+  if ((rows / offset) %% 1 != 0) {
+    if (end.page == 1) offset <- rows
+    if(!all && end.page != 1) end.offset <- rows %% offset
+  }
+
+  # retrieve data
+  if (minimised) url <- file.path(url, "min")
+  if (reference) {
+    url <-file.path(url, "reference")
+    refMsg <- 'Please note that "class" needs to an instance of ReferenceEntity or ExternalOntology, and no species filter'
+  }
+  url <- paste0(url, "?offset=", offset)
+  if (!is.null(species)) url <- paste0(url, "&species=", species.id)
+  
+  final.df <- data.frame()
+  final.list <- list()
+  for (page in 1:end.page) {
+    if (page == end.page && exists("end.offset")) url <- gsub(paste0("offset=", offset), paste0("offset=", end.offset), url)
+    tmp.url <- paste0(url, "&page=", page)
+    
+    if (exists("refMsg")) {
+      tmp <- .retrieveData(tmp.url, customizedMsg=refMsg, fromJSON=T, as="text")
+    } else {
+      tmp <- .retrieveData(tmp.url, fromJSON=T, as="text")
+    }
+    final.list[[page]] <- tmp
+  }
+  rbindlist(final.list, fill=T)
+}
+
+
+
 #' Search query
 #' @param query search term
 #' @param filters filter conditions
