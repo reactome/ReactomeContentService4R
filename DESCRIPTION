@@ -16,7 +16,10 @@ Imports:
     httr,
     jsonlite,
     magick,
-    data.table
+    data.table,
+    doParallel,
+    foreach,
+    parallel
 Suggests: 
     pdftools,
     testthat,

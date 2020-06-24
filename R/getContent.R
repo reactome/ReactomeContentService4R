@@ -306,8 +306,11 @@ getReferences <- function(external.id) {
 #' # getSchemaClass("Regulation", rows=2000, minimised=T)
 #' # getSchemaClass("Complex", species="pig", rows=100)
 #' @importFrom data.table rbindlist
+#' @importFrom foreach foreach %dopar%
+#' @importFrom parallel makeCluster stopCluster
+#' @importFrom doParallel registerDoParallel
 #' @rdname getSchemaClass
-#' @export 
+#' @export
 
 getSchemaClass <- function(class, species=NULL, all=FALSE, rows=1000,
                            minimised=FALSE, reference=FALSE) {
@@ -347,20 +350,33 @@ getSchemaClass <- function(class, species=NULL, all=FALSE, rows=1000,
   url <- paste0(url, "?offset=", offset)
   if (!is.null(species)) url <- paste0(url, "&species=", species.id)
   
-  final.df <- data.frame()
-  final.list <- list()
-  for (page in 1:end.page) {
-    if (page == end.page && exists("end.offset")) url <- gsub(paste0("offset=", offset), paste0("offset=", end.offset), url)
+  # use doParallel - parallelly GET the urls with different pages
+  cl <- makeCluster(2) # make clusters
+  registerDoParallel(cl)
+
+  dfcomb <- function(...) {
+    rbindlist(list(...), fill = TRUE)
+  }
+  
+  page <- 1 #to avoid note in R check
+  final.df <- foreach(page=1:end.page, .export=c(".retrieveData", ".checkStatus"), .combine = dfcomb) %dopar% {
+    # change the offset for the last page if it's different
+    if (page == end.page && exists("end.offset")) {
+      url <- gsub(paste0("offset=", offset), paste0("offset=", end.offset), url)
+    }
     tmp.url <- paste0(url, "&page=", page)
-    
+
     if (exists("refMsg")) {
       tmp <- .retrieveData(tmp.url, customizedMsg=refMsg, fromJSON=T, as="text")
     } else {
       tmp <- .retrieveData(tmp.url, fromJSON=T, as="text")
     }
-    final.list[[page]] <- tmp
+    tmp
   }
-  rbindlist(final.list, fill=T)
+  stopCluster(cl)
+  
+  # sort by dbId
+  final.df[order(final.df$dbId),] 
 }
 
 
