@@ -12,7 +12,7 @@ getEntities(
 )
 }
 \arguments{
-\item{id}{stable or db id of a Reactome physical entity, or id from resources other than Reactome}
+\item{id}{stable or db id of a Reactome PhysicalEntity, or id from resources other than Reactome}
 
 \item{retrieval}{entities to be retrieved}
 

@@ -3,12 +3,12 @@
 
 #' File exporter for events
 #' @param event.id a stable or db id of a pathway or reaction
-#' @param format either in sbgn (Systems Biology Graphical Notation) or sbml (Systems Biology Markup Language)
+#' @param format either in "sbgn" (SBGN, Systems Biology Graphical Notation) or "sbml" (SBML, Systems Biology Markup Language)
 #' @param file full path of the output file
-#' @return content of sbgn or sbml or a file saved into specified path
+#' @return content of SBGN or SBML or a file saved into specified path
 #' @examples
 #' exportEventFile("R-HSA-432047", "sbgn")
-#' #exportEventFile("R-HSA-68616", "sbml", "R-HSA-68616.sbml.xml")
+#' # exportEventFile("R-HSA-68616", "sbml", "R-HSA-68616.sbml.xml")
 #' @importFrom utils write.table
 #' @rdname exportEventFile
 #' @export
@@ -20,7 +20,7 @@ exportEventFile <- function(event.id, format=c("sbgn", "sbml"), file=NULL) {
   file.content <- .retrieveData(url, fromJSON=FALSE, as="text")
   # save into a file
   if (!is.null(file)) {
-    write.table(file.content, file=file, quote=F, row.names=F, col.names=F)
+    write.table(file.content, file=file, quote=FALSE, row.names=FALSE, col.names=FALSE)
   } else {
     return(file.content) 
   }

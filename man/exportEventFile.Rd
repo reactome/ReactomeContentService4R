@@ -9,17 +9,17 @@ exportEventFile(event.id, format = c("sbgn", "sbml"), file = NULL)
 \arguments{
 \item{event.id}{a stable or db id of a pathway or reaction}
 
-\item{format}{either in sbgn (Systems Biology Graphical Notation) or sbml (Systems Biology Markup Language)}
+\item{format}{either in "sbgn" (SBGN, Systems Biology Graphical Notation) or "sbml" (SBML, Systems Biology Markup Language)}
 
 \item{file}{full path of the output file}
 }
 \value{
-content of sbgn or sbml or a file saved into specified path
+content of SBGN or SBML or a file saved into specified path
 }
 \description{
 File exporter for events
 }
 \examples{
 exportEventFile("R-HSA-432047", "sbgn")
-#exportEventFile("R-HSA-68616", "sbml", "R-HSA-68616.sbml.xml")
+# exportEventFile("R-HSA-68616", "sbml", "R-HSA-68616.sbml.xml")
 }

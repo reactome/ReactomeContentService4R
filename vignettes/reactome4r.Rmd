@@ -4,23 +4,108 @@ author: Chi Lam Poon
 date: "`r format(Sys.time(), '%m/%d/%Y')`"
 output: 
   rmarkdown::html_document:
-    theme: paper
-    highlight: tango
     toc: true
-    toc_depth: 2
+    toc_float: true
+    highlight: tango
+    df_print: paged
 vignette: >
-  %\VignetteIndexEntry{Introduction}
+  %\VignetteIndexEntry{reactome4r}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-# Introduction
+
+[Reactome](https://reactome.org) is a free, open-source, open access, curated and peer-reviewed knowledgebase of biomolecular pathways. Knowledge in Reactome is captured as instances of the  classes with their associated attributes. The [data model](https://reactome.org/content/schema) consists of classes that describe different concepts like pathway or entity. Classes have attributes that hold properties of the represented class instances, such as names, identifiers, etc.
+
+The `reactome4r` package provides an interface to query Reactome data from the [Content Service](https://reactome.org/dev/content-service).
 
 
 
-# 
+## Installing `reactome4r`
+
+```{r load}
+# install.packages("reactome4r") or BiocManager::install("reactome4r")
+library(reactome4r)
+```
 
 
+
+## Instance fetching
+
+To retrieve instances of one class, you can use `getSchemaClass()`. This function would first show how many instances belong to the specified class, and return 1000 instances by default. If you want to retrieve all instances of one class, set the argument `all = TRUE`.
+
+```{r class, warnings=FALSE, rownames.print=FALSE}
+# fetch 100 Event instances (sorted by database id)
+complexes <- getSchemaClass(class = "Complex", rows = 100)
+head(complexes, 5)
+```
+
+
+Attribute `species` could be specified here but only for `Event` or `PhysicalEntity` class. Some attributes are also retrieved and thus they can be used to filter. For example, to fetch all human pathways, and then select those in disease:
+
+```{r class-species, warnings=FALSE, rownames.print=FALSE}
+#pathways <- getSchemaClass(class = "Pathway", species = "human", all = TRUE) "all" not for testing
+pathways <- getSchemaClass(class = "Pathway", species = "human", rows = 100)
+head(pathways, 5)
+
+# Filter those in diseases
+disease.pathways <- pathways[pathways$isInDisease == TRUE, ]
+head(disease.pathways, 5)
+```
+
+
+The `query()` function could fetch an instance by its database id or standard id. It returns all attributes of one instances, and also lists any second level relationships regarding regulations and catalysts.
+
+```{r queryID}
+mmu.109624 <- query(id = "R-MMU-109624")
+str(mmu.109624, max.level = 1)
+```
+
+
+
+## Participants of Event
+
+__Events__ represent biological processes and are further subclassed into __Pathways__ and __ReactionLikeEvents__ in Reactome. ReactionLikeEvents are single-step molecular transformations. Pathways are ordered groups of ReactionLikeEvents that together carry out a biological process. 
+
+Participants of an Event can be retrieved using function `getParticipants()`. To get the ReactionLikeEvents of a Pathway with "hasEvent" attribute:
+
+```{r rles, rownames.print=FALSE}
+rles.68689 <- getParticipants("R-HSA-68689", retrieval = "ReactionLikeEventsInPathways")
+head(rles.68689, 5)
+```
+
+
+All instances involved in a Pathway or a ReactionLikeEvent can also be retrieved. Since ReactionLikeEvent is an event that converts inputs into outputs, returned instances for an ReactionLikeEvent are further annotated with `input`, `output`, `catalyst`, or `regulatedBy`.
+
+```{r allInstances, rownames.print=FALSE}
+# ReactionLikeEvent
+getParticipants("R-HSA-73916", retrieval = "AllInstances")
+
+# Pathway
+instances.68689 <- getParticipants("R-HSA-68689", retrieval = "AllInstances")
+instances.68689
+```
+
+
+PhysicalEntity instances share numerous invariant features such as names, molecular structure and links to external databases like UniProt or ChEBI. Thus, Reactome creates instances of the separate ReferenceEntity class. A ReferenceEntity instance (those in the `refEntities` column above) captures the invariant features of a molecule. Moreover, PhysicalEntity and ReferenceEntity involved in an Event could also be retrieved separately by setting the `retrieval` parameter.
+
+```{r ref}
+instances.68689$refEntities[4]
+```
+
+
+
+## Event mapping
+
+Given either a PhysicalEntity or an Event, the top-level pathways or lower-level pathways that contain it can be retrieved by function `getPathways()`.
+
+```{r getPathways, rownames.print=FALSE}
+# lower-level pathways (default)
+getPathways("R-HSA-68640")
+
+# top-level pathways
+getPathways("R-HSA-68640", top.level = TRUE)
+```
 
 
 

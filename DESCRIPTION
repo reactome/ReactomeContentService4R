@@ -24,5 +24,6 @@ Suggests:
     pdftools,
     testthat,
     knitr,
+    kableExtra,
     rmarkdown
 VignetteBuilder: knitr
