@@ -150,29 +150,28 @@ getParticipants <- function(event.id, retrieval=c("ReactionLikeEventsInPathways"
   # annotate instances in ReactionLikeEvents
   if (retrieval == "AllInstances") {
     all.info <- query(event.id)
+    #if (all.info[["schemaClass"]] %in% c("Reaction", "BlackBoxEvent", "Depolymerisation", "FailedReaction", "Polymerisation")) {
     if (all.info[["className"]] == "Reaction") {
       participants$type <- rep(NA, nrow(participants))
       
       # input/output/catalysts/regulations
       for (pe in c("input", "output", "catalystActivity", "regulatedBy")) {
-        if (!is.null(all.info[[pe]])) {
-          # if no weird IDs then it is a dataframe
-          if (is.data.frame(all.info[[pe]])) {
-            apply(all.info[[pe]], 1, function(row) {
-              if (row$dbId %in% participants$peDbId) {
-                id <- row$dbId
-                participants[participants$peDbId == id, ]$type <<- pe
-              } else if(row$physicalEntity.dbId %in% participants$peDbId){
-                id <- row$physicalEntity.dbId
-                participants[participants$peDbId == id, ]$type <<- pe
-              }
-            })
-          } else {
-            # a list
-            for (list in all.info[[pe]]) {
-              id <- list["dbId"]
-              if (!is.null(id) && id %in% participants$peDbId) participants[participants$peDbId == id, ]$type <- pe
+        # if no weird IDs then it is a dataframe
+        if (is.data.frame(all.info[[pe]])) {
+          apply(all.info[[pe]], 1, function(row) {
+            if (row$dbId %in% participants$peDbId) {
+              id <- row$dbId
+              participants[participants$peDbId == id, ]$type <<- pe
+            } else if (row$physicalEntity.dbId %in% participants$peDbId){
+              id <- row$physicalEntity.dbId
+              participants[participants$peDbId == id, ]$type <<- pe
             }
+          })
+        } else if (is.list(all.info[[pe]])) {
+          # a list
+          for (list in all.info[[pe]]) {
+            id <- list["dbId"]
+            if (!is.null(id) && id %in% participants$peDbId) participants[participants$peDbId == id, ]$type <- pe
           }
         }
       }
@@ -180,6 +179,7 @@ getParticipants <- function(event.id, retrieval=c("ReactionLikeEventsInPathways"
       participants <- participants[ ,c("peDbId", "displayName", "schemaClass", "type", "refEntities")] # rearrange the columns
     }
   }
+  
   participants
 }
 
@@ -378,6 +378,7 @@ getReferences <- function(external.id) {
 #' # getSchemaClass("Regulation", rows=2000, minimised=TRUE)
 #' # getSchemaClass("Complex", species="pig", rows=100)
 #' @importFrom data.table rbindlist
+#' @importFrom utils setTxtProgressBar txtProgressBar
 #' @importFrom foreach foreach %dopar%
 #' @importFrom parallel makeCluster stopCluster
 #' @importFrom doParallel registerDoParallel
@@ -386,28 +387,33 @@ getReferences <- function(external.id) {
 
 getSchemaClass <- function(class, species=NULL, all=FALSE, rows=1000,
                            minimised=FALSE, reference=FALSE) {
+  # reminder
+  if (reference && !class %in% c("ReferenceEntity", "ExternalOntology")) {
+    stop("Note that 'class' needs to either ReferenceEntity or ExternalOntology, and no species filter")
+  }
+  
   path <- "data/schema"
   url <- file.path(getOption("base.address"), path, class)
+  msg <- NULL
   
   # get the count first
   cnt.url <- file.path(url, "count")
   if (!is.null(species)) {
     species.id <- .matchSpecies(species, "taxId")
     cnt.url <- paste0(cnt.url, "?species=", species.id)
+    msg <- 'Please note that if "species" is specified, "class" needs to be an instance of Event or PhysicalEntity'
   }
-  msg <- 'Please note that if "species" is specified, "class" needs to be an instance of Event or PhysicalEntity'
   all.cnt <- as.integer(.retrieveData(cnt.url, customizedMsg=msg, fromJSON=FALSE, as="text"))
   if (length(all.cnt) == 0) stop("as above", call.=FALSE)
   
   # set the range of entries
-  if (all) rows <- all.cnt
-  if (!all && rows > all.cnt) rows <- all.cnt
+  if ((all) || (!all && rows > all.cnt)) rows <- all.cnt
   
   species.name <- ifelse(!is.null(species), .matchSpecies(species, "displayName"), "ALL")
   cat(paste0("Total ", all.cnt, " entries of ", class, " with species ", species.name,
              ", retrieving ", format(rows, scientific=FALSE), " of them...\n"))
   
-  #  calculate the range of pages
+  # calculate the range of pages
   max.class.offset <- 25
   max.other.offset <- 20000
   offset <- ifelse(!minimised && !reference, max.class.offset, max.other.offset)
@@ -419,35 +425,29 @@ getSchemaClass <- function(class, species=NULL, all=FALSE, rows=1000,
 
   # retrieve data
   if (minimised) url <- file.path(url, "min")
-  if (reference) {
-    url <-file.path(url, "reference")
-    refMsg <- 'Please note that "class" needs to an instance of ReferenceEntity or ExternalOntology, and no species filter'
-  }
+  if (reference) url <-file.path(url, "reference")
+  
   url <- paste0(url, "?offset=", offset)
   if (!is.null(species)) url <- paste0(url, "&species=", species.id)
   
   # use doParallel - parallelly GET the urls with different pages
-  cl <- makeCluster(2) # make clusters
+  cl <- makeCluster(2, outfile="") # make clusters. 'outfile' for progress bar
   registerDoParallel(cl)
-
+  
+  pb <- txtProgressBar(min=0, max=end.page, style=3)
   dfcomb <- function(...) {
     rbindlist(list(...), fill = TRUE)
   }
   
   page <- 1 #to avoid note in R check
   final.df <- foreach(page=1:end.page, .export=c(".retrieveData", ".checkStatus"), .combine=dfcomb) %dopar% {
+    setTxtProgressBar(pb, page)
     # change the offset for the last page if it's different
     if (page == end.page && exists("end.offset")) {
       url <- gsub(paste0("offset=", offset), paste0("offset=", end.offset), url)
     }
     tmp.url <- paste0(url, "&page=", page)
-
-    if (exists("refMsg")) {
-      tmp <- .retrieveData(tmp.url, customizedMsg=refMsg, fromJSON=TRUE, as="text")
-    } else {
-      tmp <- .retrieveData(tmp.url, fromJSON=TRUE, as="text")
-    }
-    tmp
+    .retrieveData(tmp.url, fromJSON=TRUE, as="text")
   }
   stopCluster(cl)
   

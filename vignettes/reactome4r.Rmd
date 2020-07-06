@@ -15,7 +15,7 @@ vignette: >
 ---
 
 
-[Reactome](https://reactome.org) is a free, open-source, open access, curated and peer-reviewed knowledgebase of biomolecular pathways. Knowledge in Reactome is captured as instances of the  classes with their associated attributes. The [data model](https://reactome.org/content/schema) consists of classes that describe different concepts like pathway or entity. Classes have attributes that hold properties of the represented class instances, such as names, identifiers, etc.
+[Reactome](https://reactome.org) is a free, open-source, open access, curated and peer-reviewed knowledgebase of biomolecular pathways. Knowledge in Reactome is captured as instances of the classes with their associated attributes. The [data model](https://reactome.org/content/schema) consists of classes that describe different concepts like pathway or entity. Classes have attributes that hold properties of the represented class instances, such as names, identifiers, etc.
 
 The `reactome4r` package provides an interface to query Reactome data from the [Content Service](https://reactome.org/dev/content-service).
 

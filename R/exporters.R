@@ -4,25 +4,33 @@
 #' File exporter for events
 #' @param event.id a stable or db id of a pathway or reaction
 #' @param format either in "sbgn" (SBGN, Systems Biology Graphical Notation) or "sbml" (SBML, Systems Biology Markup Language)
+#' @param writeToFile If set to \code{TRUE}, the returned data would be written into a file. If \code{file=NULL}, the output file will be automatically saved into the working directory
 #' @param file full path of the output file
-#' @return content of SBGN or SBML or a file saved into specified path
+#' @return a character object with the content of SBGN/SBML for a given id, or a SBGN/SMBL file saved into specified path.
+#' If the output is `NULL`, please ensure the input id is an \strong{Event} id. If the output is empty character or list, please contact Reactome HelpDesk \email{help@@reactome.org}.
 #' @examples
-#' exportEventFile("R-HSA-432047", "sbgn")
-#' # exportEventFile("R-HSA-68616", "sbml", "R-HSA-68616.sbml.xml")
+#' exportEventFile("R-HSA-432047", "sbgn", writeToFile=FALSE)
+#' # exportEventFile("R-HSA-68616", "sbml", file="orc.assembly.sbml")
 #' @importFrom utils write.table
 #' @rdname exportEventFile
 #' @export
 
-exportEventFile <- function(event.id, format=c("sbgn", "sbml"), file=NULL) {
+exportEventFile <- function(event.id, format=c("sbgn", "sbml"), writeToFile=TRUE, file=NULL) {
+  # write url
   path <- "exporter/event"
+  if (missing(format)) cat("Format argument not specified, exporting in SGBN format. For SBML, specify format='sbml'")
   format <- match.arg(format, several.ok=FALSE)
   url <- file.path(getOption("base.address"), path, paste0(event.id, ".", format))
   file.content <- .retrieveData(url, fromJSON=FALSE, as="text")
+  
   # save into a file
-  if (!is.null(file)) {
+  if (writeToFile) {
+    # get the current working directory if file path not specified
+    if (is.null(file)) file <- getwd()
+    file <- file.path(file, paste0(event.id, ".", format))
     write.table(file.content, file=file, quote=FALSE, row.names=FALSE, col.names=FALSE)
   } else {
-    return(file.content) 
+    return(file.content)
   }
 }
 
@@ -49,7 +57,7 @@ exportEventFile <- function(event.id, format=c("sbgn", "sbml"), file=NULL) {
 #' @param fireworksCoverage to overlay analysis coverage values or not in fireworks image
 #' @param file full path of the output file
 #' @param ... additional parameters passed to `magick::image_write()`
-#' @return a file saved into the specified path or a magick image object. More magick processing see the \href{https://cran.r-project.org/web/packages/magick/vignettes/intro.html}{vignette}.
+#' @return an image saved into the specified path or a magick image object. More magick processing see the \href{https://cran.r-project.org/web/packages/magick/vignettes/intro.html}{vignette}.
 #' @examples
 #' ## animated gifs of EHLDs
 #' # gif <- exportImage(id="R-HSA-69278", output="diagram", format="gif",

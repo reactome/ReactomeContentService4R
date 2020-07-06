@@ -4,22 +4,30 @@
 \alias{exportEventFile}
 \title{File exporter for events}
 \usage{
-exportEventFile(event.id, format = c("sbgn", "sbml"), file = NULL)
+exportEventFile(
+  event.id,
+  format = c("sbgn", "sbml"),
+  writeToFile = TRUE,
+  file = NULL
+)
 }
 \arguments{
 \item{event.id}{a stable or db id of a pathway or reaction}
 
 \item{format}{either in "sbgn" (SBGN, Systems Biology Graphical Notation) or "sbml" (SBML, Systems Biology Markup Language)}
 
+\item{writeToFile}{If set to \code{TRUE}, the returned data would be written into a file. If \code{file=NULL}, the output file will be automatically saved into the working directory}
+
 \item{file}{full path of the output file}
 }
 \value{
-content of SBGN or SBML or a file saved into specified path
+a character object with the content of SBGN/SBML for a given id, or a SBGN/SMBL file saved into specified path.
+If the output is \code{NULL}, please ensure the input id is an \strong{Event} id. If the output is empty character or list, please contact Reactome HelpDesk \email{help@reactome.org}.
 }
 \description{
 File exporter for events
 }
 \examples{
-exportEventFile("R-HSA-432047", "sbgn")
-# exportEventFile("R-HSA-68616", "sbml", "R-HSA-68616.sbml.xml")
+exportEventFile("R-HSA-432047", "sbgn", writeToFile=FALSE)
+# exportEventFile("R-HSA-68616", "sbml", file="orc.assembly.sbml")
 }

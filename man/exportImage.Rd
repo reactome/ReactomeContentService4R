@@ -67,7 +67,7 @@ the first one is selected. If it is not specified (null) and format is gif, then
 \item{...}{additional parameters passed to \code{magick::image_write()}}
 }
 \value{
-a file saved into the specified path or a magick image object. More magick processing see the \href{https://cran.r-project.org/web/packages/magick/vignettes/intro.html}{vignette}.
+an image saved into the specified path or a magick image object. More magick processing see the \href{https://cran.r-project.org/web/packages/magick/vignettes/intro.html}{vignette}.
 }
 \description{
 Image exporter
