@@ -10,7 +10,7 @@ getReferences(external.id)
 \item{external.id}{an id from external dabatases, e.g. ChEBI, UniProt}
 }
 \value{
-a dataframe containing all reference entities for a given id
+a list containing all reference entities for a given id
 }
 \description{
 ReferenceEntity queries

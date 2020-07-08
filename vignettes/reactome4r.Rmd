@@ -53,12 +53,14 @@ disease.pathways <- pathways[pathways$isInDisease == TRUE, ]
 head(disease.pathways, 5)
 ```
 
+Now that we have got all those disease pathways, we can look into what disease(s) associated with a pathway of your interest, which is one of the attributes of this pathway.
 
-The `query()` function could fetch an instance by its database id or standard id. It returns all attributes of one instances, and also lists any second level relationships regarding regulations and catalysts.
+The `query()` function could fetch all attributes of an instance with any class by its database id or standard id. It also lists any second level relationships regarding regulations and catalysts.
 
 ```{r queryID}
-mmu.109624 <- query(id = "R-MMU-109624")
-str(mmu.109624, max.level = 1)
+hsa.2033519 <- query(id = "R-HSA-2033519")
+str(hsa.2033519, max.level = 1)
+hsa.2033519[["disease"]]
 ```
 
 
@@ -93,11 +95,18 @@ PhysicalEntity instances share numerous invariant features such as names, molecu
 instances.68689$refEntities[4]
 ```
 
+To get all reference entities for a given non-Reactome identifier (UniProt, Ensembl, etc. See [resource](https://reactome.org/content/schema/objects/ReferenceDatabase)), you can use `getReferences`:
+```{r ref-all}
+str(getReferences("Q14209"))
+```
+
 
 
 ## Event mapping
 
-Given either a PhysicalEntity or an Event, the top-level pathways or lower-level pathways that contain it can be retrieved by function `getPathways()`.
+
+### Entities mapped to Events
+Given either a PhysicalEntity or an Event, the top-level pathways or lower-level pathways that contain it can be retrieved by function `getPathways`.
 
 ```{r getPathways, rownames.print=FALSE}
 # lower-level pathways (default)
@@ -106,6 +115,26 @@ getPathways("R-HSA-68640")
 # top-level pathways
 getPathways("R-HSA-68640", top.level = TRUE)
 ```
+
+Also, identifiers from [other databases](https://reactome.org/content/schema/objects/ReferenceDatabase) could be mapped to Reactome Events with function `getMapping`. For reactions, specify `mapTo = "reactions"`.
+
+```{r getMapping}
+p53.pathways <- getMapping(id = "TP53", resource = "HGNC", species = "human")
+head(p53.pathways, 5)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

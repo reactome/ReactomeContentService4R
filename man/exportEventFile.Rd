@@ -21,8 +21,8 @@ exportEventFile(
 \item{file}{full path of the output file}
 }
 \value{
-a character object with the content of SBGN/SBML for a given id, or a SBGN/SMBL file saved into specified path.
-If the output is \code{NULL}, please ensure the input id is an \strong{Event} id. If the output is empty character or list, please contact Reactome HelpDesk \email{help@reactome.org}.
+a character object with the content of SBGN/SBML for a given id, or a SBGN/SMBL file saved into the specified path.
+If the output is empty character or list, please check on \href{https://reactome.org/ContentService/}{ContentService} or contact HelpDesk \email{help@reactome.org}.
 }
 \description{
 File exporter for events

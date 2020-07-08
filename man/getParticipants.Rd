@@ -6,14 +6,14 @@
 \usage{
 getParticipants(
   event.id,
-  retrieval = c("ReactionLikeEventsInPathways", "AllInstances", "PhysicalEntities",
-    "ReferenceEntities")
+  retrieval = c("AllInstances", "PhysicalEntities", "ReferenceEntities",
+    "ReactionLikeEventsInPathways")
 )
 }
 \arguments{
 \item{event.id}{a stable or db id of an Event (pathways and reactions)}
 
-\item{retrieval}{to retrieve ReactionLikeEvents or all participants or PhysicalEntities or ReferenceEntities}
+\item{retrieval}{to retrieve all participants or PhysicalEntities or ReferenceEntities in an Event, or ReactionLikeEvents in a pathway}
 }
 \value{
 a dataframe containing requested participants

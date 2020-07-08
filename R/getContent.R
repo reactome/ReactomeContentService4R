@@ -32,7 +32,9 @@ discover <- function(event.id) {
 getEntities <- function(id, retrieval=c("subunits", "complexes", "componentOf", "otherForms"),
                         resource="Reactome", subunitsExcludeStructures=FALSE) {
   # check the inputs
+  if (missing(retrieval)) message("Retrieval argument not specified, retrieving 'subunits'... For other entities, specify 'retrieval'")
   retrieval <- match.arg(retrieval, several.ok=FALSE)
+  
   if (retrieval == "complexes" && resource == "Reactome") {
     stop("Please use an id from other resources (e.g. UniProt, Ensembl) 
          to retrieve complexes and specify the resource that the id comes from")
@@ -87,6 +89,7 @@ getEventsHierarchy <- function(main.species) {
 
 getMapping <- function(id, resource, species, mapTo=c("pathways", "reactions")) {
   path <- "data/mapping"
+  if (missing(mapTo)) message("MapTo argument not specified, mapping to pathways... For reactions, specify mapTo='reactions'")
   mapTo <- match.arg(mapTo, several.ok=FALSE)
   taxon.id <- .matchSpecies(species, "taxId")
   url <- file.path(getOption("base.address"), path, resource, 
@@ -116,7 +119,7 @@ getOrthology <- function(id, species) {
 
 #' Participants queries
 #' @param event.id a stable or db id of an Event (pathways and reactions)
-#' @param retrieval to retrieve ReactionLikeEvents or all participants or PhysicalEntities or ReferenceEntities
+#' @param retrieval to retrieve all participants or PhysicalEntities or ReferenceEntities in an Event, or ReactionLikeEvents in a pathway
 #' @return a dataframe containing requested participants
 #' @examples
 #' getParticipants("R-HSA-73916", "AllInstances")
@@ -125,12 +128,13 @@ getOrthology <- function(id, species) {
 #' @rdname getParticipants
 #' @export 
 
-getParticipants <- function(event.id, retrieval=c("ReactionLikeEventsInPathways", "AllInstances", 
-                                                  "PhysicalEntities", "ReferenceEntities")) {
+getParticipants <- function(event.id, retrieval=c("AllInstances", "PhysicalEntities", 
+                                                  "ReferenceEntities", "ReactionLikeEventsInPathways")) {
   path <- "data/participants"
   
   # write url
   url <- file.path(getOption("base.address"), path, event.id) #all participants
+  if (missing(retrieval)) message("Retrieval argument not spcified, retrieving AllInstances... For others, specify 'retrieval'")
   retrieval <- match.arg(retrieval, several.ok = FALSE)
   
   msg <- NULL
@@ -350,7 +354,7 @@ query <- function(id) {
 
 #' ReferenceEntity queries
 #' @param external.id an id from external dabatases, e.g. ChEBI, UniProt
-#' @return a dataframe containing all reference entities for a given id
+#' @return a list containing all reference entities for a given id
 #' @examples
 #' getReferences("15377") #ChEBI id
 #' @rdname getReferences
@@ -359,7 +363,8 @@ query <- function(id) {
 getReferences <- function(external.id) {
   path <- "references/mapping"
   url <- file.path(getOption("base.address"), path, external.id)
-  .retrieveData(url, as="text")
+  ref.df <- .retrieveData(url, as="text")
+  as.list(ref.df)
 }
 
 

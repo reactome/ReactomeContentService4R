@@ -42,10 +42,6 @@
   tryCatch(
     expr = {
       res <- httr::GET(url)
-      .checkStatus(res, customizedMsg=customizedMsg)
-      data <- httr::content(res, ...)
-      if (fromJSON) data <- jsonlite::fromJSON(data)
-      return(data)
     },
     error = function(e) {
       # catch error of GET
@@ -55,6 +51,12 @@
       message(e)
     }
   )
+  
+  # return the data if the .checkStatus passed
+  .checkStatus(res, customizedMsg=customizedMsg)
+  data <- httr::content(res, ...)
+  if (fromJSON) data <- jsonlite::fromJSON(data)
+  data
 }
 
 
