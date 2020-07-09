@@ -465,20 +465,20 @@ getSchemaClass <- function(class, species=NULL, all=FALSE, rows=1000,
 #' Search query
 #' @param query name or dbId or stId of a search term from any class
 #' @param species name or taxon id or dbId or abbreviation of species
-#' @param type type filter, such as "Protein", "Complex", "Reaction", etc
-#' @param compartment compartment filter, such as "cytosol", "plasma membrane", "nucleoplasm", etc
-#' @param keyword keyword filter, such as "binds", "phosphorylates", "transports", etc
+#' @param types type filter, such as "Protein", "Complex", "Reaction", etc
+#' @param compartments compartment filter, such as "cytosol", "plasma membrane", "nucleoplasm", etc
+#' @param keywords keyword filter, such as "binds", "phosphorylates", "transports", etc
 #' @param cluster cluster returned data or not
 #' @param range start row and the number of rows to include, e.g. `range = c(0, 2)`
 #' @return a list of information about the search term
 #' @examples
-#' searchQuery(query="Biological oxidation", species="Mus musculus")
+#' searchQuery(query="Biological oxidation", species="Mus musculus", types=c("Pathway", "Reaction"))
 #' @seealso \code{\link{listSearchItems}} for available filters
 #' @rdname searchQuery
 #' @export
 
-searchQuery <- function(query, species=NULL, type=NULL, compartment=NULL,
-                        keyword=NULL, cluster=TRUE, range=NULL) {
+searchQuery <- function(query, species=NULL, types=NULL, compartments=NULL,
+                        keywords=NULL, cluster=TRUE, range=NULL) {
   # write full url
   args <- as.list(environment())
   args <- args[sapply(args, function(arg) !is.null(arg))]
@@ -491,8 +491,10 @@ searchQuery <- function(query, species=NULL, type=NULL, compartment=NULL,
   
   msg <- paste0("Searching for term '", query, "'... ")
   for (filter in names(filters)) {
-    msg <- paste0(msg, filter, ":'", filters[[filter]], "' ")
-    url <- paste0(url, "&", filter, "=", gsub("\\s", "%20", filters[[filter]]))
+    msg <- paste0(msg, filter, ":'", paste(filters[[filter]], collapse = " & "), "' ")
+    for (term in filters[[filter]]) {
+      url <- paste0(url, "&", filter, "=", gsub("\\s", "%20", term)) 
+    }
   }
   cat(paste0(msg, "\n"))
   
