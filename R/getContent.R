@@ -32,7 +32,7 @@ discover <- function(event.id) {
 getEntities <- function(id, retrieval=c("subunits", "complexes", "componentOf", "otherForms"),
                         resource="Reactome", subunitsExcludeStructures=FALSE) {
   # check the inputs
-  if (missing(retrieval)) message("Retrieval argument not specified, retrieving 'subunits'... For other entities, specify 'retrieval'")
+  if (missing(retrieval)) message("Retrieval argument not specified, retrieving 'subunits'... For 'complexes', 'componentOf', 'otherForms', specify 'retrieval'")
   retrieval <- match.arg(retrieval, several.ok=FALSE)
   
   if (retrieval == "complexes" && resource == "Reactome") {
@@ -134,7 +134,7 @@ getParticipants <- function(event.id, retrieval=c("AllInstances", "PhysicalEntit
   
   # write url
   url <- file.path(getOption("base.address"), path, event.id) #all participants
-  if (missing(retrieval)) message("Retrieval argument not spcified, retrieving AllInstances... For others, specify 'retrieval'")
+  if (missing(retrieval)) message("Retrieval argument not spcified, retrieving 'AllInstances'... For 'PhysicalEntities', 'ReferenceEntities', 'ReactionLikeEventsInPathways', specify 'retrieval'")
   retrieval <- match.arg(retrieval, several.ok = FALSE)
   
   msg <- NULL
@@ -145,37 +145,36 @@ getParticipants <- function(event.id, retrieval=c("AllInstances", "PhysicalEntit
   } else if (retrieval == "ReactionLikeEventsInPathways") {
     # in a different path/method
     url <- file.path(getOption("base.address"), "data/pathway", event.id, "containedEvents")
-    msg <- "'ReactionLikeEvents' are in those pathways with 'hasEvent' attribute"
+    msg <- "'ReactionlikeEvents' are found in the 'hasEvent' attribute of Pathways"
   }
   
   # retrieve
   participants <- .retrieveData(url, customizedMsg=msg, as="text")
   
-  # annotate instances in ReactionLikeEvents
+  # annotate instances in ReactionLikeEvents if retrieving AllInstances
   if (retrieval == "AllInstances") {
     all.info <- query(event.id)
-    #if (all.info[["schemaClass"]] %in% c("Reaction", "BlackBoxEvent", "Depolymerisation", "FailedReaction", "Polymerisation")) {
     if (all.info[["className"]] == "Reaction") {
       participants$type <- rep(NA, nrow(participants))
       
       # input/output/catalysts/regulations
-      for (pe in c("input", "output", "catalystActivity", "regulatedBy")) {
+      for (component in c("input", "output", "catalystActivity", "regulatedBy")) {
         # if no weird IDs then it is a dataframe
-        if (is.data.frame(all.info[[pe]])) {
-          apply(all.info[[pe]], 1, function(row) {
+        if (is.data.frame(all.info[[component]])) {
+          apply(all.info[[component]], 1, function(row) {
             if (row$dbId %in% participants$peDbId) {
               id <- row$dbId
-              participants[participants$peDbId == id, ]$type <<- pe
+              participants[participants$peDbId == id, ]$type <<- component
             } else if (row$physicalEntity.dbId %in% participants$peDbId){
               id <- row$physicalEntity.dbId
-              participants[participants$peDbId == id, ]$type <<- pe
+              participants[participants$peDbId == id, ]$type <<- component
             }
           })
-        } else if (is.list(all.info[[pe]])) {
+        } else if (is.list(all.info[[component]])) {
           # a list
-          for (list in all.info[[pe]]) {
+          for (list in all.info[[component]]) {
             id <- list["dbId"]
-            if (!is.null(id) && id %in% participants$peDbId) participants[participants$peDbId == id, ]$type <- pe
+            if (!is.null(id) && id %in% participants$peDbId) participants[participants$peDbId == id, ]$type <- component
           }
         }
       }
@@ -296,8 +295,8 @@ getPerson <- function(name=NULL, id=NULL, attributes=NULL) {
 
 
 
-#' List the whole Reactome search items (species, types, compartments, keywords)
-#' @param items categories of query
+#' List the whole Reactome search items
+#' @param items categories of query, including "species", "types", "compartments", "keywords", or "all"
 #' @param facet return faceting information or not
 #' @return available search items
 #' @examples
@@ -305,11 +304,11 @@ getPerson <- function(name=NULL, id=NULL, attributes=NULL) {
 #' @rdname listSearchItems
 #' @export
 
-listSearchItems <- function(items=c("all", "species", "type", "compartment", "keyword"),
-                            facet=FALSE) {
+listSearchItems <- function(items=c("all", "species", "types", "compartments", "keywords"), facet=FALSE) {
   path <- "search/facet"
   
   # ensure inputs
+  if (missing(items)) message('Item argument not specified, returning all kinds of items...')
   items <- match.arg(items, several.ok = TRUE)
   
   # retrieve
@@ -380,7 +379,7 @@ getReferences <- function(external.id) {
 #' @return a sorted dataframe containing entries that belong to the specified schema class
 #' @examples
 #' getSchemaClass(class="Drug", all=TRUE)
-#' # getSchemaClass("Regulation", rows=2000, minimised=TRUE)
+#' # getSchemaClass("Regulation", rows=500, minimised=TRUE)
 #' # getSchemaClass("Complex", species="pig", rows=100)
 #' @importFrom data.table rbindlist
 #' @importFrom utils setTxtProgressBar txtProgressBar
@@ -409,7 +408,6 @@ getSchemaClass <- function(class, species=NULL, all=FALSE, rows=1000,
     msg <- 'Please note that if "species" is specified, "class" needs to be an instance of Event or PhysicalEntity'
   }
   all.cnt <- as.integer(.retrieveData(cnt.url, customizedMsg=msg, fromJSON=FALSE, as="text"))
-  if (length(all.cnt) == 0) stop("as above", call.=FALSE)
   
   # set the range of entries
   if ((all) || (!all && rows > all.cnt)) rows <- all.cnt
@@ -455,7 +453,7 @@ getSchemaClass <- function(class, species=NULL, all=FALSE, rows=1000,
     .retrieveData(tmp.url, fromJSON=TRUE, as="text")
   }
   stopCluster(cl)
-  
+
   # sort by dbId
   final.df <- final.df[order(final.df$dbId),]
   rownames(final.df) <- 1:nrow(final.df)
@@ -467,33 +465,37 @@ getSchemaClass <- function(class, species=NULL, all=FALSE, rows=1000,
 #' Search query
 #' @param query name or dbId or stId of a search term from any class
 #' @param species name or taxon id or dbId or abbreviation of species
-#' @param types type filter, such as "Protein", "Complex", "Reaction", etc
-#' @param compartments compartment filter, such as "cytosol", "plasma membrane", "nucleoplasm", etc
-#' @param keywords keyword filter, such as "binds", "phosphorylates", "transports", etc
+#' @param type type filter, such as "Protein", "Complex", "Reaction", etc
+#' @param compartment compartment filter, such as "cytosol", "plasma membrane", "nucleoplasm", etc
+#' @param keyword keyword filter, such as "binds", "phosphorylates", "transports", etc
 #' @param cluster cluster returned data or not
-#' @param range start row and the number of rows to include
+#' @param range start row and the number of rows to include, e.g. `range = c(0, 2)`
 #' @return a list of information about the search term
 #' @examples
 #' searchQuery(query="Biological oxidation", species="Mus musculus")
+#' @seealso \code{\link{listSearchItems}} for available filters
 #' @rdname searchQuery
 #' @export
 
-searchQuery <- function(query, species=NULL, types=NULL, compartments=NULL,
-                        keywords=NULL, cluster=TRUE, range=NULL) {
-                        
+searchQuery <- function(query, species=NULL, type=NULL, compartment=NULL,
+                        keyword=NULL, cluster=TRUE, range=NULL) {
   # write full url
   args <- as.list(environment())
+  args <- args[sapply(args, function(arg) !is.null(arg))]
   path <- "search/query"
-  query <- gsub("\\s", "%20", query)
-  url <- file.path(getOption("base.address"), paste0(path, "?query=", query))
+  url <- file.path(getOption("base.address"), paste0(path, "?query=", gsub("\\s", "%20", query)))
   
   ## add filters for the query
   filters <- args[!names(args) %in% c("query", "cluster", "range")]
-  filters[["species"]] <- .matchSpecies(species, "displayName")
+  if ("species" %in% names(filters)) filters[["species"]] <- .matchSpecies(filters[["species"]], "displayName")
   
+  msg <- paste0("Searching for term '", query, "'... ")
   for (filter in names(filters)) {
+    msg <- paste0(msg, filter, ":'", filters[[filter]], "' ")
     url <- paste0(url, "&", filter, "=", gsub("\\s", "%20", filters[[filter]]))
   }
+  cat(paste0(msg, "\n"))
+  
   ## cluster the returned data or not
   url <- paste0(url, "&cluster=", tolower(cluster)) 
   ## restrict rows to include

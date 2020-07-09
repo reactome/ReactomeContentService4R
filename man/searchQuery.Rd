@@ -7,9 +7,9 @@
 searchQuery(
   query,
   species = NULL,
-  types = NULL,
-  compartments = NULL,
-  keywords = NULL,
+  type = NULL,
+  compartment = NULL,
+  keyword = NULL,
   cluster = TRUE,
   range = NULL
 )
@@ -19,15 +19,15 @@ searchQuery(
 
 \item{species}{name or taxon id or dbId or abbreviation of species}
 
-\item{types}{type filter, such as "Protein", "Complex", "Reaction", etc}
+\item{type}{type filter, such as "Protein", "Complex", "Reaction", etc}
 
-\item{compartments}{compartment filter, such as "cytosol", "plasma membrane", "nucleoplasm", etc}
+\item{compartment}{compartment filter, such as "cytosol", "plasma membrane", "nucleoplasm", etc}
 
-\item{keywords}{keyword filter, such as "binds", "phosphorylates", "transports", etc}
+\item{keyword}{keyword filter, such as "binds", "phosphorylates", "transports", etc}
 
 \item{cluster}{cluster returned data or not}
 
-\item{range}{start row and the number of rows to include}
+\item{range}{start row and the number of rows to include, e.g. \code{range = c(0, 2)}}
 }
 \value{
 a list of information about the search term
@@ -37,4 +37,7 @@ Search query
 }
 \examples{
 searchQuery(query="Biological oxidation", species="Mus musculus")
+}
+\seealso{
+\code{\link{listSearchItems}} for available filters
 }

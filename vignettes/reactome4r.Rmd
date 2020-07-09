@@ -53,7 +53,7 @@ disease.pathways <- pathways[pathways$isInDisease == TRUE, ]
 head(disease.pathways, 5)
 ```
 
-Now that we have got all those disease pathways, we can look into what disease(s) associated with a pathway of your interest, which is one of the attributes of this pathway.
+Now that we have got all those disease pathways, we can look into what disease(s) associated with a pathway of your interest.
 
 The `query()` function could fetch all attributes of an instance with any class by its database id or standard id. It also lists any second level relationships regarding regulations and catalysts.
 
@@ -89,16 +89,34 @@ instances.68689
 ```
 
 
-PhysicalEntity instances share numerous invariant features such as names, molecular structure and links to external databases like UniProt or ChEBI. Thus, Reactome creates instances of the separate ReferenceEntity class. A ReferenceEntity instance (those in the `refEntities` column above) captures the invariant features of a molecule. Moreover, PhysicalEntity and ReferenceEntity involved in an Event could also be retrieved separately by setting the `retrieval` parameter.
+PhysicalEntity instances share numerous invariant features such as names, molecular structure and links to external databases like UniProt or ChEBI. In Reactome, all non-Reactome identifiers are stored in ReferenceEntity objects. All PhysicalEntities have a linked ReferenceEntity. A ReferenceEntity instance captures the invariant features of a molecule. 
+
+PhysicalEntity and ReferenceEntity involved in an Event could also be retrieved separately by setting the `retrieval` parameter.
 
 ```{r ref}
 instances.68689$refEntities[4]
 ```
 
 To get all reference entities for a given non-Reactome identifier (UniProt, Ensembl, etc. See [resource](https://reactome.org/content/schema/objects/ReferenceDatabase)), you can use `getReferences`:
+
 ```{r ref-all}
-str(getReferences("Q14209"))
+ref.entity <- getReferences("Q14209")
+str(ref.entity)
 ```
+
+Once you get the Reactome dbId of a non-Reactome identifier, you can fetch the PhysicalEntities linked to this non-Reactome identifier through retrieving all attributes:
+
+```{r ref-pe}
+ref.dbid <- ref.entity$dbId
+ref.all.info <- query(ref.dbid)
+ref.all.info$physicalEntity
+```
+
+
+### Identifiers in an Event
+
+
+
 
 
 
@@ -119,7 +137,7 @@ getPathways("R-HSA-68640", top.level = TRUE)
 Also, identifiers from [other databases](https://reactome.org/content/schema/objects/ReferenceDatabase) could be mapped to Reactome Events with function `getMapping`. For reactions, specify `mapTo = "reactions"`.
 
 ```{r getMapping}
-p53.pathways <- getMapping(id = "TP53", resource = "HGNC", species = "human")
+p53.pathways <- getMapping(id = "TP53", resource = "HGNC", species = "human", mapTo = "pathways")
 head(p53.pathways, 5)
 ```
 

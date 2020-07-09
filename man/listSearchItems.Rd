@@ -2,15 +2,15 @@
 % Please edit documentation in R/getContent.R
 \name{listSearchItems}
 \alias{listSearchItems}
-\title{List the whole Reactome search items (species, types, compartments, keywords)}
+\title{List the whole Reactome search items}
 \usage{
 listSearchItems(
-  items = c("all", "species", "type", "compartment", "keyword"),
+  items = c("all", "species", "types", "compartments", "keywords"),
   facet = FALSE
 )
 }
 \arguments{
-\item{items}{categories of query}
+\item{items}{categories of query, including "species", "types", "compartments", "keywords", or "all"}
 
 \item{facet}{return faceting information or not}
 }
@@ -18,7 +18,7 @@ listSearchItems(
 available search items
 }
 \description{
-List the whole Reactome search items (species, types, compartments, keywords)
+List the whole Reactome search items
 }
 \examples{
 listSearchItems(items=c("species", "keyword"))

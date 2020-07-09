@@ -35,6 +35,6 @@ Schema class queries
 }
 \examples{
 getSchemaClass(class="Drug", all=TRUE)
-# getSchemaClass("Regulation", rows=2000, minimised=TRUE)
+# getSchemaClass("Regulation", rows=500, minimised=TRUE)
 # getSchemaClass("Complex", species="pig", rows=100)
 }
