@@ -22,7 +22,7 @@ a dataframe containing requested participants
 Participants queries
 }
 \examples{
-getParticipants("R-HSA-73916", "AllInstances")
+getParticipants("R-HSA-6804741", "AllInstances")
 # getParticipants("R-HSA-69306", "ReactionLikeEventsInPathways")
 # getParticipants("R-HSA-5205685", "PhysicalEntities")
 }

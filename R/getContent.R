@@ -122,7 +122,7 @@ getOrthology <- function(id, species) {
 #' @param retrieval to retrieve all participants or PhysicalEntities or ReferenceEntities in an Event, or ReactionLikeEvents in a pathway
 #' @return a dataframe containing requested participants
 #' @examples
-#' getParticipants("R-HSA-73916", "AllInstances")
+#' getParticipants("R-HSA-6804741", "AllInstances")
 #' # getParticipants("R-HSA-69306", "ReactionLikeEventsInPathways")
 #' # getParticipants("R-HSA-5205685", "PhysicalEntities")
 #' @rdname getParticipants
@@ -155,34 +155,44 @@ getParticipants <- function(event.id, retrieval=c("AllInstances", "PhysicalEntit
   if (retrieval == "AllInstances") {
     all.info <- query(event.id)
     if (all.info[["className"]] == "Reaction") {
-      participants$type <- rep(NA, nrow(participants))
+      # Empty columns
+      participants$type <- rep(0, nrow(participants)) -> participants$numOfEntries
       
       # input/output/catalysts/regulations
       for (component in c("input", "output", "catalystActivity", "regulatedBy")) {
-        # if no weird IDs then it is a dataframe
+        # if it's a df, entries are all unique in the reaction
         if (is.data.frame(all.info[[component]])) {
           apply(all.info[[component]], 1, function(row) {
-            if (row$dbId %in% participants$peDbId) {
-              id <- row$dbId
-              participants[participants$peDbId == id, ]$type <<- component
-            } else if (row$physicalEntity.dbId %in% participants$peDbId){
+            if (component == "catalystActicity") {
               id <- row$physicalEntity.dbId
+            } else if (component == "regulatedBy") {
+              id <- row$regulator.dbId
+            } else {
+              id <- row$dbId
+            }
+            if (id %in% participants$peDbId) {
               participants[participants$peDbId == id, ]$type <<- component
+              participants[participants$peDbId == id, ]$numOfEntries <<- participants[participants$peDbId == id, ]$numOfEntries + 1
             }
           })
         } else if (is.list(all.info[[component]])) {
-          # a list
+          # a list - multiple entries exist
           for (list in all.info[[component]]) {
-            id <- list["dbId"]
-            if (!is.null(id) && id %in% participants$peDbId) participants[participants$peDbId == id, ]$type <- component
+            if (is.integer(list) && list %in% participants$peDbId) {
+              participants[participants$peDbId == list, ]$numOfEntries <- participants[participants$peDbId == list, ]$numOfEntries + 1
+            } else if (is.list(list) && list["dbId"] %in% participants$peDbId) {
+              id <- list["dbId"]
+              participants[participants$peDbId == id, ]$type <- component
+              participants[participants$peDbId == id, ]$numOfEntries <- participants[participants$peDbId == id, ]$numOfEntries + 1
+            }
           }
         }
       }
       participants$type <- gsub("catalystActivity", "catalyst", participants$type)
-      participants <- participants[ ,c("peDbId", "displayName", "schemaClass", "type", "refEntities")] # rearrange the columns
+      participants$type <- gsub("regulatedBy", "regulator", participants$type)
+      participants <- participants[ ,c("peDbId", "displayName", "schemaClass", "type", "numOfEntries", "refEntities")] # rearrange the columns
     }
   }
-  
   participants
 }
 
