@@ -83,6 +83,7 @@ exportImage <- function(id=NULL, output=c("diagram", "fireworks", "reaction"),
                         fireworksCoverage=FALSE, file=NULL, ...) {
   
   # ensure the arguments
+  if (missing(format)) message("Format argument not spcified, exporting as 'png'... For 'jpg', 'jpeg', 'svg', 'gif', specify 'format'")
   output <- match.arg(output, several.ok=FALSE)
   format <- match.arg(format, several.ok=FALSE)
   

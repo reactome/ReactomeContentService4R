@@ -76,29 +76,6 @@ getEventsHierarchy <- function(main.species) {
 
 
 
-#' Mapping related queries
-#' @param id a stable or db id of an event or entity
-#' @param resource database name other than Reactome (e.g. UniProt, GeneCards)
-#' @param species name or taxon id or dbId or abbreviation of species
-#' @param mapTo retrieve pathways or reactions where an identifier can be mapped to
-#' @return a dataframe containing requested pathways or reactions
-#' @examples
-#' getMapping("Q7Z569", "GeneCards", "human", "reactions")
-#' @rdname getMapping
-#' @export 
-
-getMapping <- function(id, resource, species, mapTo=c("pathways", "reactions")) {
-  path <- "data/mapping"
-  if (missing(mapTo)) message("MapTo argument not specified, mapping to pathways... For reactions, specify mapTo='reactions'")
-  mapTo <- match.arg(mapTo, several.ok=FALSE)
-  taxon.id <- .matchSpecies(species, "taxId")
-  url <- file.path(getOption("base.address"), path, resource, 
-                   id, paste0(mapTo, "?species=", taxon.id))
-  .retrieveData(url, as="text")
-}
-
-
-
 #' Orthology related queries
 #' @param id a stable or db id of an event or entity
 #' @param species name or taxon id or dbId or abbreviation of species
@@ -119,22 +96,22 @@ getOrthology <- function(id, species) {
 
 #' Participants queries
 #' @param event.id a stable or db id of an Event (pathways and reactions)
-#' @param retrieval to retrieve all participants or PhysicalEntities or ReferenceEntities in an Event, or ReactionLikeEvents in a pathway
+#' @param retrieval to retrieve all participants or PhysicalEntities or ReferenceEntities in an Event, or Events in a Pathway
 #' @return a dataframe containing requested participants
 #' @examples
 #' getParticipants("R-HSA-6804741", "AllInstances")
-#' # getParticipants("R-HSA-69306", "ReactionLikeEventsInPathways")
+#' # getParticipants("R-HSA-69306", "EventsInPathways")
 #' # getParticipants("R-HSA-5205685", "PhysicalEntities")
 #' @rdname getParticipants
 #' @export 
 
 getParticipants <- function(event.id, retrieval=c("AllInstances", "PhysicalEntities", 
-                                                  "ReferenceEntities", "ReactionLikeEventsInPathways")) {
+                                                  "ReferenceEntities", "EventsInPathways")) {
   path <- "data/participants"
   
   # write url
   url <- file.path(getOption("base.address"), path, event.id) #all participants
-  if (missing(retrieval)) message("Retrieval argument not spcified, retrieving 'AllInstances'... For 'PhysicalEntities', 'ReferenceEntities', 'ReactionLikeEventsInPathways', specify 'retrieval'")
+  if (missing(retrieval)) message("Retrieval argument not spcified, retrieving 'AllInstances'... For 'PhysicalEntities', 'ReferenceEntities', 'EventsInPathways', specify 'retrieval'")
   retrieval <- match.arg(retrieval, several.ok = FALSE)
   
   msg <- NULL
@@ -142,10 +119,10 @@ getParticipants <- function(event.id, retrieval=c("AllInstances", "PhysicalEntit
     url <- file.path(url, "participatingPhysicalEntities")
   } else if (retrieval == "ReferenceEntities") {
     url <- file.path(url, "referenceEntities")
-  } else if (retrieval == "ReactionLikeEventsInPathways") {
+  } else if (retrieval == "EventsInPathways") {
     # in a different path/method
     url <- file.path(getOption("base.address"), "data/pathway", event.id, "containedEvents")
-    msg <- "'ReactionlikeEvents' are found in the 'hasEvent' attribute of Pathways"
+    msg <- "'Events' are found in the 'hasEvent' attribute of Pathways"
   }
   
   # retrieve
@@ -160,30 +137,35 @@ getParticipants <- function(event.id, retrieval=c("AllInstances", "PhysicalEntit
       
       # input/output/catalysts/regulations
       for (component in c("input", "output", "catalystActivity", "regulatedBy")) {
-        # if it's a df, entries are all unique in the reaction
-        if (is.data.frame(all.info[[component]])) {
-          apply(all.info[[component]], 1, function(row) {
-            if (component == "catalystActicity") {
-              id <- row$physicalEntity.dbId
+        sub.info <- all.info[[component]]
+        # If it's a df, entries are all unique in the component;
+        # if it's list, multiple entries exist
+        # put dataframe into a list
+        if (is.data.frame(sub.info)) sub.info <- list(sub.info)
+        
+        for (list in sub.info) {
+          if (is.integer(list) && list %in% participants$peDbId) {
+            # only an id, no other info
+            participants[participants$peDbId == list, ]$numOfEntries <- participants[participants$peDbId == list, ]$numOfEntries + 1
+            if (participants[participants$peDbId == list, ]$type == 0) participants[participants$peDbId == list, ]$type <- component
+          } else if (is.list(list)) {
+            # get the id
+            if (component == "catalystActivity") {
+              id <- list$physicalEntity$dbId
             } else if (component == "regulatedBy") {
-              id <- row$regulator.dbId
+              id <- list$regulator$dbId
             } else {
-              id <- row$dbId
+              id <- list$dbId
             }
+            
             if (id %in% participants$peDbId) {
-              participants[participants$peDbId == id, ]$type <<- component
-              participants[participants$peDbId == id, ]$numOfEntries <<- participants[participants$peDbId == id, ]$numOfEntries + 1
-            }
-          })
-        } else if (is.list(all.info[[component]])) {
-          # a list - multiple entries exist
-          for (list in all.info[[component]]) {
-            if (is.integer(list) && list %in% participants$peDbId) {
-              participants[participants$peDbId == list, ]$numOfEntries <- participants[participants$peDbId == list, ]$numOfEntries + 1
-            } else if (is.list(list) && list["dbId"] %in% participants$peDbId) {
-              id <- list["dbId"]
-              participants[participants$peDbId == id, ]$type <- component
-              participants[participants$peDbId == id, ]$numOfEntries <- participants[participants$peDbId == id, ]$numOfEntries + 1
+              tmp.type <- participants[participants$peDbId == id, ]$type
+              if (tmp.type != 0) {
+                participants[participants$peDbId == id, ]$type <- paste0(tmp.type, ",", component)
+              } else {
+                participants[participants$peDbId == id, ]$type <- component
+                participants[participants$peDbId == id, ]$numOfEntries <- participants[participants$peDbId == id, ]$numOfEntries + 1
+              }
             }
           }
         }
@@ -241,6 +223,7 @@ getPathways <- function(id, species=NULL, allForms=FALSE, top.level=FALSE) {
     }
     stopCluster(cl)
     
+    rownames(top.pathways) <- c(1:nrow(top.pathways))
     return(top.pathways)
   } else {
     return(pathways)
@@ -361,23 +344,6 @@ query <- function(id) {
 
 
 
-#' ReferenceEntity queries
-#' @param external.id an id from external dabatases, e.g. ChEBI, UniProt
-#' @return a list containing all reference entities for a given id
-#' @examples
-#' getReferences("15377") #ChEBI id
-#' @rdname getReferences
-#' @export 
-
-getReferences <- function(external.id) {
-  path <- "references/mapping"
-  url <- file.path(getOption("base.address"), path, external.id)
-  ref.df <- .retrieveData(url, as="text")
-  as.list(ref.df)
-}
-
-
-
 #' Schema class queries
 #' @param class schema class name, details see \href{https://reactome.org/content/schema/DatabaseObject}{Reactome data schema}
 #' @param species name or taxon id or dbId or abbreviation of species. Only Event or PhysicalEntity class can specify species
@@ -435,7 +401,7 @@ getSchemaClass <- function(class, species=NULL, all=FALSE, rows=1000,
     if (end.page == 1) offset <- rows
     if(!all && end.page != 1) end.offset <- rows %% offset
   }
-
+  
   # retrieve data
   if (minimised) url <- file.path(url, "min")
   if (reference) url <-file.path(url, "reference")
@@ -463,7 +429,7 @@ getSchemaClass <- function(class, species=NULL, all=FALSE, rows=1000,
     .retrieveData(tmp.url, fromJSON=TRUE, as="text")
   }
   stopCluster(cl)
-
+  
   # sort by dbId
   final.df <- final.df[order(final.df$dbId),]
   rownames(final.df) <- 1:nrow(final.df)
@@ -501,7 +467,7 @@ searchQuery <- function(query, species=NULL, types=NULL, compartments=NULL,
   
   msg <- paste0("Searching for term '", query, "'... ")
   for (filter in names(filters)) {
-    msg <- paste0(msg, filter, ":'", paste(filters[[filter]], collapse = " & "), "' ")
+    msg <- paste0(msg, filter, ":'", paste(filters[[filter]], collapse = "' & '"), "' ")
     for (term in filters[[filter]]) {
       url <- paste0(url, "&", filter, "=", gsub("\\s", "%20", term)) 
     }

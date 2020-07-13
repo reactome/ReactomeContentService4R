@@ -7,13 +7,13 @@
 getParticipants(
   event.id,
   retrieval = c("AllInstances", "PhysicalEntities", "ReferenceEntities",
-    "ReactionLikeEventsInPathways")
+    "EventsInPathways")
 )
 }
 \arguments{
 \item{event.id}{a stable or db id of an Event (pathways and reactions)}
 
-\item{retrieval}{to retrieve all participants or PhysicalEntities or ReferenceEntities in an Event, or ReactionLikeEvents in a pathway}
+\item{retrieval}{to retrieve all participants or PhysicalEntities or ReferenceEntities in an Event, or Events in a Pathway}
 }
 \value{
 a dataframe containing requested participants
@@ -23,6 +23,6 @@ Participants queries
 }
 \examples{
 getParticipants("R-HSA-6804741", "AllInstances")
-# getParticipants("R-HSA-69306", "ReactionLikeEventsInPathways")
+# getParticipants("R-HSA-69306", "EventsInPathways")
 # getParticipants("R-HSA-5205685", "PhysicalEntities")
 }
