@@ -81,15 +81,19 @@ getEventsHierarchy <- function(main.species) {
 #' @param species name or taxon id or dbId or abbreviation of species
 #' @return a list containing the orthology for given event or entity in the specified species
 #' @examples
-#' getOrthology("R-HSA-5674003", "Sus scrofa")
+#' getOrthology("R-HSA-5674003", "pig")
 #' @rdname getOrthology
 #' @export 
 
 getOrthology <- function(id, species) {
   path <- "data/orthology"
+  species.name <- .matchSpecies(species, "displayName")
   species.id <- .matchSpecies(species, "dbId") #dbId only
   url <- file.path(getOption("base.address"), path, id, "species", species.id)
-  .retrieveData(url, as="text")
+  # retrieve data
+  cat(paste0("Returning inferred object of ", id, " in species ", species.name, "...\n"))
+  note.msg <- "Note that only inferred (isInferred=TRUE) Events or Entities could be retrieved"
+  .retrieveData(url, customizedMsg=note.msg, as="text")
 }
 
 
@@ -381,7 +385,7 @@ getSchemaClass <- function(class, species=NULL, all=FALSE, rows=1000,
   if (!is.null(species)) {
     species.id <- .matchSpecies(species, "taxId")
     cnt.url <- paste0(cnt.url, "?species=", species.id)
-    msg <- 'Please note that if "species" is specified, "class" needs to be an instance of Event or PhysicalEntity'
+    msg <- 'Note that if "species" is specified, "class" needs to be an instance of Event or PhysicalEntity'
   }
   all.cnt <- as.integer(.retrieveData(cnt.url, customizedMsg=msg, fromJSON=FALSE, as="text"))
   

@@ -18,5 +18,5 @@ a list containing the orthology for given event or entity in the specified speci
 Orthology related queries
 }
 \examples{
-getOrthology("R-HSA-5674003", "Sus scrofa")
+getOrthology("R-HSA-5674003", "pig")
 }
