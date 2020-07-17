@@ -112,7 +112,7 @@ getOrthology <- function(id, species) {
   species.id <- .matchSpecies(species, "dbId") #dbId only
   url <- file.path(getOption("base.address"), path, id, "species", species.id)
   # retrieve data
-  cat(paste0("Returning inferred entries of ", id, " in species ", species.name, "...\n"))
+  cat(paste0("Returning inferred instances of ", id, " in species ", species.name, "...\n"))
   note.msg <- "Note that only orthologous Events or Entities in a different species could be retrieved"
   .retrieveData(url, customizedMsg=note.msg, as="text")
 }
