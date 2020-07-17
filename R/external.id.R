@@ -1,13 +1,19 @@
-## Mappings between non-Reactome identifiers and Reactome objects
-
-
-#' Non-Reactome id to ReferenceEntity
+#' Non-Reactome id mappings
+#' 
+#' Mappings between non-Reactome identifiers and Reactome objects.
+#' 
+#' Descriptions of functions:
+#' - [map2RefEntities] maps a non-Reactome id to ReferenceEntities that store the given external id
+#' - [map2Events] fetches Events related to a given non-Reactome id
+#' - [event2Ids] gets all non-Reactome ids associated with a given Event
+#' 
+#' @name nonReactomeId
+#' @rdname mapId
+#' @family mapNonReactomeId
 #' @param external.id an id from external dabatases, e.g. ChEBI, UniProt
-#' @return a list containing all ReferenceEntities for a given id
 #' @examples
 #' map2RefEntities("15377") #ChEBI id
-#' @rdname map2RefEntities
-#' @export 
+#' @export
 
 map2RefEntities <- function(external.id) {
   path <- "references/mapping"
@@ -18,36 +24,31 @@ map2RefEntities <- function(external.id) {
 
 
 
-#' Non-Reactome id to Events
-#' @param id non-Reactome identifier
 #' @param resource database name other than Reactome (e.g. UniProt, GeneCards)
 #' @param species name or taxon id or dbId or abbreviation of species
-#' @param mapTo retrieve pathways or reactions where an identifier can be mapped to
-#' @return a dataframe containing requested pathways or reactions
+#' @param mapTo retrieve Pathways or Reactions where an identifier can be mapped to
 #' @examples
-#' map2Events("Q7Z569", "GeneCards", "human", "reactions")
-#' @rdname map2Events
+#' map2Events("Q7Z569", resource="GeneCards", species="human", mapTo="reactions")
+#' @rdname mapId
+#' @family nonReactomeId
 #' @export 
 
-map2Events <- function(id, resource, species, mapTo=c("pathways", "reactions")) {
+map2Events <- function(external.id, resource, species, mapTo=c("pathways", "reactions")) {
   path <- "data/mapping"
   if (missing(mapTo)) message("MapTo argument not specified, mapping to pathways... For reactions, specify mapTo='reactions'")
   mapTo <- match.arg(mapTo, several.ok=FALSE)
   taxon.id <- .matchSpecies(species, "taxId")
-  url <- file.path(getOption("base.address"), path, resource, 
-                   id, paste0(mapTo, "?species=", taxon.id))
+  url <- file.path(getOption("base.address"), path, resource, external.id, paste0(mapTo, "?species=", taxon.id))
   .retrieveData(url, as="text")
 }
 
 
 
-#' Event to non-Reactome ids
 #' @param event.id a stable or db id of an Event (Pathways and Reactions)
-#' @return a list containing all non-Reactome identifiers associated with the given Event
 #' @examples
-#' event2Ids("69541")
-#' @rdname event2ExtIds
-#' @seealso \code{\link{getParticipants}} for all entities of an Event
+#' event2Ids("R-HSA-69541")
+#' @rdname mapId
+#' @family nonReactomeId
 #' @export
 
 event2Ids <- function(event.id) {

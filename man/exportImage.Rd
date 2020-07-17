@@ -51,7 +51,7 @@ exportImage(
 
 \item{diagramProfile}{color profile, "modern" or "standard"}
 
-\item{token}{token from Reactome Analysis Service}
+\item{token}{token from Reactome \href{https://reactome.org/dev/analysis}{Analysis Service}}
 
 \item{resource}{the analysis resource for which the results will be overlaid on top of the given pathways overview}
 
@@ -70,7 +70,8 @@ the first one is selected. If it is not specified (null) and format is gif, then
 an image saved into the specified path or a magick image object. More magick processing see the \href{https://cran.r-project.org/web/packages/magick/vignettes/intro.html}{vignette}.
 }
 \description{
-Image exporter
+The diagram exporter allows researchers to include images of their favorite pathway diagrams into their publications, posters or presentations.
+For details see Reactome \href{https://reactome.org/dev/content-service/diagram-exporter}{diagram exporter} guide.
 }
 \examples{
 ## animated gifs of EHLDs
@@ -87,3 +88,10 @@ Image exporter
 # exportImage(id="R-HSA-6787403", output="reaction", format="svg",
 #           flg="MTO1", analysisProfile="Copper\%20plus", file="R-HSA-6787403.svg")
 }
+\seealso{
+\code{\link[magick]{magick}} to further process the image object
+
+Other exporter: 
+\code{\link{exportEventFile}()}
+}
+\concept{exporter}

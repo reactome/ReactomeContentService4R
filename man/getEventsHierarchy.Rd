@@ -7,15 +7,30 @@
 getEventsHierarchy(main.species)
 }
 \arguments{
-\item{main.species}{name or taxon/db id or abbreviation of main species, which could be searched using \code{getSpecies(main=T)}}
+\item{main.species}{name or taxon/db id or abbreviation of \strong{main species} in Reactome}
 }
 \value{
-a nested dataframe containing full event hierarchy for any given main species
+a nested dataframe containing full event hierarchy for a given main species
 }
 \description{
-EventsHierarchy queries
+Events (Pathways and Reactions) in Reactome are organized in a hierarchical structure for every species.
+By following all \code{hasEvent} relationships, this method retrieves the full event hierarchy for any given \strong{main species}.
 }
 \examples{
-#getEventsHierarchy("chicken")
-#getEventsHierarchy("XTR")
+# getEventsHierarchy("chicken")
+# getEventsHierarchy("XTR")
 }
+\seealso{
+\code{\link{getSpecies}} to get the main species list
+
+Other getContent: 
+\code{\link{getEntities}()},
+\code{\link{getOrthology}()},
+\code{\link{getParticipants}()},
+\code{\link{getPathways}()},
+\code{\link{getPerson}()},
+\code{\link{getSchemaClass}()},
+\code{\link{getSpecies}()},
+\code{\link{query}()}
+}
+\concept{getContent}

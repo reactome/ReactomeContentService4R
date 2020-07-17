@@ -59,7 +59,7 @@ str(hsa.2033519, max.level = 1)
 
 The `schemaClass` of R-HSA-2033519 is _Pathway_ since we get this id by `getSchemaClass` for Pathway. Likewise, we can always access what Class an instance belongs to using `query`.
 
-Here we look into the _disease_ slot:
+Here we look into the _disease_ slot to find disease associated with this Pathway:
 
 ```{r diseaseSlot, rownames.print=FALSE}
 hsa.2033519[["disease"]]
@@ -120,7 +120,7 @@ exportImage("R-HSA-1839098", output = "reaction", quality = 10)
 
 ## Mappings
 
-### PhysicalEntity/Enent to Events
+### PhysicalEntity/Event to Events
 
 Given either a PhysicalEntity or an Event, the top-level pathways or lower-level pathways that contain it can be retrieved by function `getPathways`. In this example, we try with the Complex "Unwinding complex at replication fork [nucleoplasm]" with identifier R-HSA-176949.
 
@@ -134,7 +134,7 @@ getPathways("R-HSA-176949", top.level = TRUE)
 
 ### Non-Reactome id to Entities
 
-Given an identifier in [non-Reactome resources](https://reactome.org/content/schema/objects/ReferenceDatabase), all related __ReferenceEntities__ could be retrieved by function `map2RefEntities`. Here we focus on gene _TP53_:
+Given an identifier in [non-Reactome resources](https://reactome.org/content/schema/objects/ReferenceDatabase), all relative __ReferenceEntities__ could be retrieved by function `map2RefEntities`. Here we focus on gene _TP53_:
 
 ```{r ref-all}
 tp53.re <- map2RefEntities("TP53")
@@ -143,7 +143,7 @@ str(tp53.re)
 
 This object is linked to UniPort with identifier P04637 and name TP53. Once the Reactome `dbId` of a non-Reactome identifier or name is obtained, the __PhysicalEntities__ associated with this non-Reactome identifier can be fetched through retrieving all attributes using `query`:
   
-```{r ref-pe}
+```{r ref-pe, rownames.print=FALSE}
 tp53.all.info <- query(tp53.re$dbId)
 head(tp53.all.info$physicalEntity, 5)
 ```
@@ -152,12 +152,14 @@ head(tp53.all.info$physicalEntity, 5)
 
 Furthermore, non-Reactome identifiers could be mapped to Reactome Events with function `map2Events`, therefore we are able to get pathways associated with _TP53_. If you stick to the gene symbol, you should specify `resource = "HGNC"`. Actually this is same as `id = P04637, resource = "UniProt"`. For reactions, specify `mapTo = "reactions"`.
 
-```{r map2Events}
-tp53.pathways <- map2Events(id = "TP53", resource = "HGNC", species = "human", mapTo = "pathways")
+```{r map2Events, rownames.print=FALSE}
+tp53.pathways <- map2Events("TP53", resource = "HGNC", species = "human", mapTo = "pathways")
 head(tp53.pathways, 5)
 ```
 
 ### Entity to non-Reactome ids
+
+A recap for all slots of _TP53_ Reactome object:
 
 ```{r}
 str(tp53.all.info, max.level = 1)
@@ -175,7 +177,7 @@ Non-Reactome identifiers associated with a ReferenceEntity or PhysicalEntity can
 
 ### Event to non-Reactome ids
 
-Non-Reactome identifiers (`primaryIdentifier`, `secondaryIdentifier`, and `otherIdentifier`) and gene symbols can also be retrieved by function `event2Ids`. Here we try with Reaction "Multiple proteins are localized at replication fork" (stId R-HSA-176942):
+Non-Reactome identifiers (`primaryIdentifier`, `secondaryIdentifier`, and `otherIdentifier`) and gene symbols associated with an Event can also be retrieved by function `event2Ids`. Here we try with Reaction "Multiple proteins are localized at replication fork" (stId R-HSA-176942):
 
 ```{r event2Ids}
 ids <- event2Ids("R-HSA-176942")
@@ -183,8 +185,66 @@ str(ids)
 ```
 
 
+## Inferred events
+
+Reactome uses the set of manually curated Human Reactions to computationally infer reactions in twenty (?) evolutionarily divergent eukaryotic species for which high-quality whole-genome sequence data are available. Therefore a set of high-quality inferred Pathways, Reactions, and PhysicalEntities (proteins) exists in these species. More details about computationally inferred events could be found [here](https://reactome.org/documentation/inferred-events).
+
+We can first look at a human pathway "Stabilization of p53" with identifier R-HSA-69541 and the `orthologousEvent` slot in its Reactome Pathway object.
+
+```{r, rownames.print=FALSE}
+stab.p53 <- query("R-HSA-69541")
+stab.p53[["orthologousEvent"]]
+```
+
+Note that the `isInferred` value of this human instance is `FALSE`, while those of all its orthologous Events in other species are `TRUE`.
+
+```{r}
+stab.p53[["isInferred"]]
+```
+
+Conversely, if you have a non-Human Event or PhysicalEntity instance and want to get all its orthologies in other species, you could use function `getOrthology` to fetch the Human orthologous instance first, then repeat the steps above - `query` the result identifier, extract those in `orthologousEvent` attribute.
+
+```{r getOrthology}
+getOrthology("R-SSC-69541", species = "human")
+```
+
+
 ## Others
 
+### Species in Reactome
 
+The list of all species in Reactome Database could be retrieved by function `getSpecies`. Moreover, you can specify `main = TRUE` to obtain the list of __main species__, those have either manually curated or computationally inferred pathways.
+
+```{r getSpecies, rownames.print=FALSE}
+# list main species
+getSpecies(main = TRUE)
+```
+
+### Person in Reactome
+
+The function `getPerson` will return information of a person in Reactome. All attributes in a Person object see [here](https://reactome.org/content/schema/Person). For instance, to find information about Justin Cook:
+
+```{r}
+getPerson(name = "Justin Cook")
+```
+
+### Event file exporter
+
+Reacome is also able to export Events in [SBGN](https://sbgn.github.io/) or [SBML](http://co.mbine.org/standards/sbml) format besides the pathway diagrams. `exportEventFile` could retrieve the content in specified format and save into a file. More details see `?exportEventFile`.
+
+```{r exportEventFile}
+file <- exportEventFile("R-HSA-432047", format = "sbgn", writeToFile = FALSE)
+```
+
+
+### Literature reference
+
+
+
+## Session info
+
+```{r sessioninfo}
+sessionInfo()
+```
 
 

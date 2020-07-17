@@ -2,7 +2,7 @@
 % Please edit documentation in R/getContent.R
 \name{getParticipants}
 \alias{getParticipants}
-\title{Participants queries}
+\title{Participants related queries}
 \usage{
 getParticipants(
   event.id,
@@ -13,16 +13,37 @@ getParticipants(
 \arguments{
 \item{event.id}{a stable or db id of an Event (pathways and reactions)}
 
-\item{retrieval}{to retrieve all participants or PhysicalEntities or ReferenceEntities in an Event, or Events in a Pathway}
+\item{retrieval}{participants to be retrieved, including "AllInstances", "PhysicalEntities", "ReferenceEntities", "EventsInPathways"}
 }
 \value{
 a dataframe containing requested participants
 }
 \description{
-Participants queries
+Data in Reactome are organized in a hierarchical manner - Pathways contain Reactions, Reactions contain PhysicalEntities.
+This function is to get the participants of a given Event.
+}
+\details{
+Details on options of \code{retrieval} arg:
+\itemize{
+\item \strong{AllInstances}: retrieves participants containing a PhysicalEntity and a collection of ReferenceEntities
+\item \strong{PhysicalEntities}: retrieves all the PhysicalEntities that take part in a given Event
+\item \strong{ReferenceEntities}: retrieves the ReferenceEntities for all PhysicalEntities in every constituent Pathway/Reaction
+\item \strong{EventsInPathways}: recursively retrieves all the Events contained in any given Event
+}
 }
 \examples{
 getParticipants("R-HSA-6804741", "AllInstances")
-# getParticipants("R-HSA-69306", "EventsInPathways")
-# getParticipants("R-HSA-5205685", "PhysicalEntities")
+getParticipants("R-HSA-69306", "EventsInPathways")
 }
+\seealso{
+Other getContent: 
+\code{\link{getEntities}()},
+\code{\link{getEventsHierarchy}()},
+\code{\link{getOrthology}()},
+\code{\link{getPathways}()},
+\code{\link{getPerson}()},
+\code{\link{getSchemaClass}()},
+\code{\link{getSpecies}()},
+\code{\link{query}()}
+}
+\concept{getContent}
