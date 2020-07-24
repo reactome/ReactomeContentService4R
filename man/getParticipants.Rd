@@ -25,7 +25,7 @@ This function is to get the participants of a given Event.
 \details{
 Details on options of \code{retrieval} arg:
 \itemize{
-\item \strong{AllInstances}: retrieves participants containing a PhysicalEntity and a collection of ReferenceEntities
+\item \strong{AllInstances}: retrieves all participants (PhysicalEntities) from a given Event and their ReferenceEntities
 \item \strong{PhysicalEntities}: retrieves all the PhysicalEntities that take part in a given Event
 \item \strong{ReferenceEntities}: retrieves the ReferenceEntities for all PhysicalEntities in every constituent Pathway/Reaction
 \item \strong{EventsInPathways}: recursively retrieves all the Events contained in any given Event

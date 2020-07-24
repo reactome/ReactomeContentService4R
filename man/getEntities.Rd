@@ -30,7 +30,7 @@ This method retrieves instances related to PhysicalEntity.
 Details on options of \code{retrieval} arg:
 \itemize{
 \item \strong{subunits}: retrieves subunits that constitute any given Complex
-\item \strong{complexes}: retrieves Complexes that contain the given (id, resource)
+\item \strong{complexes}: retrieves Complexes that contain the given \code{id} and \code{resource}
 \item \strong{componentOf}: retrieves structures (Complexes and Sets) that include the given Entity as their component
 \item \strong{otherForms}: retrieves Entities containing all other forms of the given PhysicalEntity
 }

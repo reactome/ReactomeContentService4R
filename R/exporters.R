@@ -7,13 +7,13 @@
 #' 
 #' @param id a stable or db id of an Event (Pathway or Reaction)
 #' @param format either in "sbgn" (SBGN, Systems Biology Graphical Notation) or "sbml" (SBML, Systems Biology Markup Language)
-#' @param writeToFile If set to `TRUE`, the returned data would be written into a file. If `file=NULL`, the output file will be automatically saved into the working directory
+#' @param writeToFile If set to `TRUE`, the returned data would be written into a file. If `file=NULL`, the output file will be automatically saved into the working directory and named based on the `id` and `format`
 #' @param file full path of the output file
 #' @return a character object with the content of SBGN/SBML for a given id, or a SBGN/SMBL file saved into the specified path.
 #' If the output is empty character or list, please check on \href{https://reactome.org/ContentService/}{ContentService} or contact HelpDesk \email{help@@reactome.org}.
 #' @examples
 #' exportEventFile("R-HSA-432047", "sbgn", writeToFile=FALSE)
-#' # exportEventFile("R-HSA-68616", "sbml", file="orc.assembly.sbml")
+#' \dontrun{exportEventFile("R-HSA-68616", "sbml", file="orc.assembly.sbml")}
 #' @importFrom utils write.table
 #' @rdname exportEventFile
 #' @family exporter
@@ -31,6 +31,7 @@ exportEventFile <- function(id, format=c("sbgn", "sbml"), writeToFile=TRUE, file
   if (writeToFile) {
     # get the current working directory if file path not specified
     if (is.null(file)) file <- file.path(getwd(), paste0(id, ".", format))
+    cat(paste0("File exported to '", file, "'...\n"))
     write.table(file.content, file=file, quote=FALSE, row.names=FALSE, col.names=FALSE)
   } else {
     return(file.content)
@@ -66,19 +67,22 @@ exportEventFile <- function(id, format=c("sbgn", "sbml"), writeToFile=TRUE, file
 #' @param ... additional parameters passed to \code{\link[magick]{image_write}}
 #' @return an image saved into the specified path or a magick image object. More magick processing see the \href{https://cran.r-project.org/web/packages/magick/vignettes/intro.html}{vignette}.
 #' @examples
-#' ## animated gifs of EHLDs
-#' # gif <- exportImage(id="R-HSA-69278", output="diagram", format="gif",
-#' #                   sel="R-HSA-69242", token="MjAyMDA2MTcyMDM5NDBfMzU2")
-#' # print(gif)
+#' \dontrun{
+#' # animated gifs of EHLDs
+#' gif <- exportImage(id="R-HSA-69278", output="diagram", format="gif",
+#'                    sel="R-HSA-69242", token="MjAyMDA2MTcyMDM5NDBfMzU2")
+#' print(gif)
 #'
-#' ## fireworks
-#' # fw <- exportImage(species="9606", output="fireworks", format="jpg",
-#' #                  quality=7, sel="R-HSA-68918")
-#' # print(fw)
+#' # fireworks
+#' fw <- exportImage(species="9606", output="fireworks", format="jpg",
+#'                   quality=7, sel="R-HSA-68918")
+#' ## System dependent
+#' magick::image_browse(fw)
 #'
-#' ## reaction
-#' # exportImage(id="R-HSA-6787403", output="reaction", format="svg",
-#' #           flg="MTO1", analysisProfile="Copper%20plus", file="R-HSA-6787403.svg")
+#' # reaction
+#' exportImage(id="R-HSA-6787403", output="reaction", format="svg",
+#'             flg="MTO1", analysisProfile="Copper%20plus", file="R-HSA-6787403.svg")
+#' }
 #' @importFrom magick image_read_svg image_read image_write
 #' @rdname exportImage
 #' @family exporter
@@ -126,6 +130,7 @@ exportImage <- function(id=NULL, output=c("diagram", "fireworks", "reaction"),
   
   # write into a file if file path provided
   if (!is.null(file)) {
+    cat(paste0("Image exported to '", file, "'...\n"))
     image_write(image=img, path=file, format=format, ...)
   } else {
     return(img)

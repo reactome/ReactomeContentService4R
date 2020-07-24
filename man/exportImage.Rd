@@ -74,19 +74,22 @@ The diagram exporter allows researchers to include images of their favorite path
 For details see Reactome \href{https://reactome.org/dev/content-service/diagram-exporter}{diagram exporter} guide.
 }
 \examples{
-## animated gifs of EHLDs
-# gif <- exportImage(id="R-HSA-69278", output="diagram", format="gif",
-#                   sel="R-HSA-69242", token="MjAyMDA2MTcyMDM5NDBfMzU2")
-# print(gif)
+\dontrun{
+# animated gifs of EHLDs
+gif <- exportImage(id="R-HSA-69278", output="diagram", format="gif",
+                   sel="R-HSA-69242", token="MjAyMDA2MTcyMDM5NDBfMzU2")
+print(gif)
 
-## fireworks
-# fw <- exportImage(species="9606", output="fireworks", format="jpg",
-#                  quality=7, sel="R-HSA-68918")
-# print(fw)
+# fireworks
+fw <- exportImage(species="9606", output="fireworks", format="jpg",
+                  quality=7, sel="R-HSA-68918")
+## System dependent
+magick::image_browse(fw)
 
-## reaction
-# exportImage(id="R-HSA-6787403", output="reaction", format="svg",
-#           flg="MTO1", analysisProfile="Copper\%20plus", file="R-HSA-6787403.svg")
+# reaction
+exportImage(id="R-HSA-6787403", output="reaction", format="svg",
+            flg="MTO1", analysisProfile="Copper\%20plus", file="R-HSA-6787403.svg")
+}
 }
 \seealso{
 \code{\link[magick]{magick}} to further process the image object

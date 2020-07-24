@@ -16,7 +16,7 @@ exportEventFile(
 
 \item{format}{either in "sbgn" (SBGN, Systems Biology Graphical Notation) or "sbml" (SBML, Systems Biology Markup Language)}
 
-\item{writeToFile}{If set to \code{TRUE}, the returned data would be written into a file. If \code{file=NULL}, the output file will be automatically saved into the working directory}
+\item{writeToFile}{If set to \code{TRUE}, the returned data would be written into a file. If \code{file=NULL}, the output file will be automatically saved into the working directory and named based on the \code{id} and \code{format}}
 
 \item{file}{full path of the output file}
 }
@@ -29,7 +29,7 @@ Export Reactome pathway diagrams in SBGN or SBML format.
 }
 \examples{
 exportEventFile("R-HSA-432047", "sbgn", writeToFile=FALSE)
-# exportEventFile("R-HSA-68616", "sbml", file="orc.assembly.sbml")
+\dontrun{exportEventFile("R-HSA-68616", "sbml", file="orc.assembly.sbml")}
 }
 \seealso{
 Other exporter: 

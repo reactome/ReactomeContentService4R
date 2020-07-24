@@ -23,7 +23,7 @@ discover <- function(event.id) {
 #' 
 #' Details on options of `retrieval` arg:
 #' - \strong{subunits}: retrieves subunits that constitute any given Complex
-#' - \strong{complexes}: retrieves Complexes that contain the given (id, resource)
+#' - \strong{complexes}: retrieves Complexes that contain the given `id` and `resource`
 #' - \strong{componentOf}: retrieves structures (Complexes and Sets) that include the given Entity as their component
 #' - \strong{otherForms}: retrieves Entities containing all other forms of the given PhysicalEntity
 #' 
@@ -76,8 +76,10 @@ getEntities <- function(id, retrieval=c("subunits", "complexes", "componentOf", 
 #' @param main.species name or taxon/db id or abbreviation of \strong{main species} in Reactome
 #' @return a nested dataframe containing full event hierarchy for a given main species
 #' @examples
-#' # getEventsHierarchy("chicken")
-#' # getEventsHierarchy("XTR")
+#' \dontrun{
+#' getEventsHierarchy("chicken")
+#' getEventsHierarchy("XTR")
+#' }
 #' @rdname getEventsHierarchy
 #' @seealso \code{\link{getSpecies}} to get the main species list
 #' @family getContent
@@ -113,7 +115,7 @@ getOrthology <- function(id, species) {
   url <- file.path(getOption("base.address"), path, id, "species", species.id)
   # retrieve data
   cat(paste0("Returning inferred instances of ", id, " in species ", species.name, "...\n"))
-  note.msg <- "Note that only orthologous Events or Entities in a different species could be retrieved"
+  note.msg <- "Note that only orthologous Events or Entities in a different species can be retrieved"
   .retrieveData(url, customizedMsg=note.msg, as="text")
 }
 
@@ -125,7 +127,7 @@ getOrthology <- function(id, species) {
 #' This function is to get the participants of a given Event.
 #' 
 #' Details on options of `retrieval` arg:
-#' - \strong{AllInstances}: retrieves participants containing a PhysicalEntity and a collection of ReferenceEntities
+#' - \strong{AllInstances}: retrieves all participants (PhysicalEntities) from a given Event and their ReferenceEntities
 #' - \strong{PhysicalEntities}: retrieves all the PhysicalEntities that take part in a given Event
 #' - \strong{ReferenceEntities}: retrieves the ReferenceEntities for all PhysicalEntities in every constituent Pathway/Reaction
 #' - \strong{EventsInPathways}: recursively retrieves all the Events contained in any given Event

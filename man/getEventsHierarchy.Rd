@@ -17,8 +17,10 @@ Events (Pathways and Reactions) in Reactome are organized in a hierarchical stru
 By following all \code{hasEvent} relationships, this method retrieves the full event hierarchy for any given \strong{main species}.
 }
 \examples{
-# getEventsHierarchy("chicken")
-# getEventsHierarchy("XTR")
+\dontrun{
+getEventsHierarchy("chicken")
+getEventsHierarchy("XTR")
+}
 }
 \seealso{
 \code{\link{getSpecies}} to get the main species list
