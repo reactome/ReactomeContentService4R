@@ -17,8 +17,20 @@ getPerson(name = NULL, id = NULL, attributes = NULL)
 a list of requested information
 }
 \description{
-Person queries
+Retrieves a specific person’s property by his/her name or OrcidId or dbId.
 }
 \examples{
 getPerson(name="Robin Haw", attributes=c("displayName", "affiliation"))
 }
+\seealso{
+Other getContent: 
+\code{\link{getEntities}()},
+\code{\link{getEventsHierarchy}()},
+\code{\link{getOrthology}()},
+\code{\link{getParticipants}()},
+\code{\link{getPathways}()},
+\code{\link{getSchemaClass}()},
+\code{\link{getSpecies}()},
+\code{\link{query}()}
+}
+\concept{getContent}

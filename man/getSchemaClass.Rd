@@ -14,13 +14,13 @@ getSchemaClass(
 )
 }
 \arguments{
-\item{class}{schema class name, details see \href{https://reactome.org/content/schema/DatabaseObject}{Reactome data schema}}
+\item{class}{schema class name}
 
-\item{species}{name or taxon id or dbId or abbreviation of species. Only Event or PhysicalEntity class can specify species}
+\item{species}{name or taxon id or dbId or abbreviation of species. Only Event and PhysicalEntity classes can specify species}
 
-\item{all}{to return all entries or not, default is \code{FALSE}}
+\item{all}{to return ALL entries or not, default is \code{FALSE}}
 
-\item{rows}{the number of rows of entries retrieved, default is 1000}
+\item{rows}{the number of entries retrieved, default is 1000}
 
 \item{minimised}{to retrieve simplified entries (db id, stable id, displayName, type) or not, default is \code{FALSE}}
 
@@ -31,10 +31,22 @@ external database name) or not, default is \code{FALSE}. Only for ReferenceEntit
 a sorted dataframe containing entries that belong to the specified schema class
 }
 \description{
-Schema class queries
+Fetch instances by Class. All Classes see \href{https://reactome.org/content/schema/DatabaseObject}{Reactome data schema}.
 }
 \examples{
 getSchemaClass(class="Drug", all=TRUE)
-# getSchemaClass("Regulation", rows=2000, minimised=T)
-# getSchemaClass("Complex", species="pig", rows=100)
+getSchemaClass(class="Regulation", rows=500, minimised=TRUE)
+getSchemaClass(class="Complex", species="pig", rows=100)
 }
+\seealso{
+Other getContent: 
+\code{\link{getEntities}()},
+\code{\link{getEventsHierarchy}()},
+\code{\link{getOrthology}()},
+\code{\link{getParticipants}()},
+\code{\link{getPathways}()},
+\code{\link{getPerson}()},
+\code{\link{getSpecies}()},
+\code{\link{query}()}
+}
+\concept{getContent}

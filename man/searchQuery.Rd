@@ -6,28 +6,38 @@
 \usage{
 searchQuery(
   query,
-  filters = c(species = "", types = "", compartments = "", keywords = ""),
+  species = NULL,
+  types = NULL,
+  compartments = NULL,
+  keywords = NULL,
   cluster = TRUE,
   range = NULL
 )
 }
 \arguments{
-\item{query}{search term}
+\item{query}{name or dbId or stId of a search term from any class}
 
-\item{filters}{filter conditions}
+\item{species}{name or taxon id or dbId or abbreviation of species}
+
+\item{types}{type filter, such as "Protein", "Complex", "Reaction", etc}
+
+\item{compartments}{compartment filter, such as "cytosol", "plasma membrane", "nucleoplasm", etc}
+
+\item{keywords}{keyword filter, such as "binds", "phosphorylates", "transports", etc}
 
 \item{cluster}{cluster returned data or not}
 
-\item{range}{start row and the number of rows to include}
+\item{range}{start row and the number of rows to include, e.g. \code{range = c(0, 2)}}
 }
 \value{
 a list of information about the search term
 }
 \description{
-Search query
+Search for Reactome objects by name or identifiers.
 }
 \examples{
-searchQuery(query="Biological oxidation", 
-filters=c(species="Mus musculus", types="", compartments="", keywords=""), 
-range=c(0,20))
+searchQuery(query="Biological oxidation", species="Mus musculus", types=c("Pathway", "Reaction"))
+}
+\seealso{
+\code{\link{listSearchItems}} for available filters
 }

@@ -1,29 +1,283 @@
 ---
-title: "reactome4r: An R Interface for Reactome Content Service"
+title: "reactome4r: an R Interface for Reactome Content Service"
 author: Chi Lam Poon
 date: "`r format(Sys.time(), '%m/%d/%Y')`"
 output: 
   rmarkdown::html_document:
-    theme: paper
-    highlight: tango
     toc: true
-    toc_depth: 2
+    toc_float:
+      collapsed: false
+    highlight: tango
+    df_print: paged
 vignette: >
-  %\VignetteIndexEntry{Introduction}
+  %\VignetteIndexEntry{reactome4r}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
-# Introduction
+
+[Reactome](https://reactome.org) is a free, open-source, open access, curated and peer-reviewed knowledgebase of biomolecular pathways. Knowledge in Reactome is captured as instances of the __classes__ with their associated __attributes__. The Reactome [data model](https://reactome.org/content/schema) is comprised primarily of classes of Pathways, Reactions and PhysicalEntities (e.g. proteins, small molecules) that are organized in a hierarchical manner (Pathways contain Reactions, Reactions contain PhysicalEntities). Classes have attributes that hold properties of the represented class instances, such as names, identifiers, etc.
+
+The `reactome4r` package provides an interface to query Reactome data from the [Content Service](https://reactome.org/dev/content-service).
 
 
+## `reactome4r` installation
 
-# 
+```{r load}
+# install.packages("reactome4r") or BiocManager::install("reactome4r")
+library(reactome4r)
+```
 
 
+## Instance fetching
+
+### Fetch by Class
+
+To retrieve instances of one Class, you can use `getSchemaClass`. This function would first show how many instances belong to the specified Class in the Reactome Database, and return 1000 instances by default. If you want to retrieve all instances of one Class, specify `all = TRUE`.
+
+Argument `species` could be specified here but only for Event or subclasses with _species_ attribute under PhysicalEntity (i.e. Complex, EntitySet, etc). Some attributes are also retrieved and thus they can be used to filter. For example, to fetch all human pathways, and then select those in disease:
+  
+```{r class-species, warnings=FALSE, rownames.print=FALSE}
+# Fetch all Human Pathways
+pathways <- getSchemaClass(class = "Pathway", species = "human", all = TRUE)
+head(pathways, 5)
+
+# Filter Disease Pathways from results
+disease.pathways <- pathways[pathways$isInDisease == TRUE, ]
+head(disease.pathways, 5)
+```
 
 
+### Fetch by identifier
+
+Now that we have got all those disease pathways, we can look into what disease(s) associated with a pathway of your interest.
+The `query` function could fetch __all attributes__ of an instance with _any_ Class by its database id or stable id. It also lists any second level relationships regarding regulations and catalysts. As an example, to retrieve one of the human disease pathway "Activated point mutants of FGFR2" with identifier R-HSA-2033519: 
+
+```{r queryID}
+# Fetch the Reactome object with all attributes using a given id
+hsa.2033519 <- query(id = "R-HSA-2033519")
+str(hsa.2033519, max.level = 1)
+```
+
+The `schemaClass` of R-HSA-2033519 is _Pathway_ since we get this id by `getSchemaClass` for Pathway. Likewise, we can always access what Class an instance belongs to using `query`.
+
+Here we look into the _disease_ slot to find disease associated with this Pathway:
+
+```{r diseaseSlot, rownames.print=FALSE}
+hsa.2033519[["disease"]]
+```
+
+### Fetch by name
+
+We can see that the pathway "Activated point mutants of FGFR2" is related to two disease: "bone development disease" and "cancer". If you want to know more about bone development disease, you may try to use the `query` function again with its dbId to obtain more details. However, you would just get a Reactome Disease object that doesn't include any other biological insights in Reactome. For now, you can use `searchQuery` function which fetches all instances associated with a __term__:
+
+```{r searchQuery, rownames.print=FALSE}
+# Search for a human disease name
+bdd.search <- searchQuery(query = "bone development disease", species = "human")
+bdd.search[["results"]]
+# the entries dataframe for the first row, with typeName 'Pathway'
+(bdd.search[["results"]])[[1]][[1]]
+```
+
+The result instances are primarily faceted by types available for this query term. As such, you could know what pathways (the above dataframe), reactions, proteins, etc. are related to the bone development disease in human. 
+
+Filters in `searchQuery()` include `species`, `types`, `compartments`, `keywords`; all the items for filtering can be viewed using function `listSearchItems`. For more details, see `?listSearchItems`.
 
 
+## Participants of Event
+
+__Events__ represent biological processes and are further subclassed into __Pathways__ and __ReactionLikeEvents__ in Reactome. ReactionLikeEvents are single-step molecular transformations. Pathways are ordered groups of ReactionLikeEvents that together carry out a biological process. 
+
+__Participants__ of a given Event (e.g. reactions of a pathway, participating molecules of a reaction) can be retrieved using function `getParticipants`. Some explanations on the `retrieval` options in this function:
+
+- `AllInstances`: retrieve all PhysicalEntities and collections of ReferenceEntities. For entities in a ReactionLikeEvent, there would be additional columns `type` and `numOfEntries` to indicate what are _inputs, outputs, catalysts, regulators_, and the number of these components
+- `EventsInPathways`: retrieve all ReactionLikeEvents and subpathways in a given Pathway
+- `PhysicalEntities/ReferenceEntities`: retrieve all contained PhysicalEntities/ReferenceEntities of all PhysicalEntities of a given Event
+
+To be more specific, __PhysicalEntity__ instances contain numerous invariant features such as names, molecular structure and links to external databases like UniProt or ChEBI. Thus, Reactome creates instances of the separate __ReferenceEntity__ class that support PhysicalEntity instances. All PhysicalEntity instances have a linked ReferenceEntity instance that captures reference features (such as external identifiers) of a molecule.
+
+### Events in Pathways
+
+Since we've known several pathways related to the bone development disease from above results, we might further retrieve ReactionLikeEvents and Pathways in the "hasEvent" attribute of Pathway "Signaling by FGFR1 in disease" (stId R-HSA-5655302):
+
+```{r rles, rownames.print=FALSE}
+# Get sub-Events of an Event
+fgfr1.signal.reactions <- getParticipants("R-HSA-5655302", retrieval = "EventsInPathways")
+head(fgfr1.signal.reactions, 5)
+```
+
+### Instances in Reactions
+
+For a ReactionLikeEvent, say "Activated FGFR1 mutants and fusions phosphorylate PLCG1" with identifier R-HSA-1839098, all relative PhysicalEntities and ReferenceEntities could be retrieved:
+
+```{r allInstances, rownames.print=FALSE}
+# Get all Entities of a ReactionLikeEvent
+instances.1839098 <- getParticipants("R-HSA-1839098", retrieval = "AllInstances")
+instances.1839098
+```
+
+It's always a good option to visualize the instances in a reaction or pathway for better elucidations. Reactome has diagrams for pathways and reactions that provide information about connected events and their locations. The diagram exporter in Content Service allows users to easily export diagrams in bitmap format. More details see `?exportImage`.
+
+```{r image}
+# Visualize above Reaction
+exportImage("R-HSA-1839098", output = "reaction", quality = 10)
+```
+
+
+## Mappings
+
+### PhysicalEntity/Event to Events
+
+Given either a PhysicalEntity or an Event, the top-level pathways or lower-level pathways that contain it can be retrieved by function `getPathways`. In this example, we try with the Complex "Unwinding complex at replication fork [nucleoplasm]" with identifier R-HSA-176949.
+
+```{r getPathways, rownames.print=FALSE}
+# get lower-level pathways (default)
+getPathways("R-HSA-176949")
+
+# get top-level pathways
+cols.order <- c(8,6,10,1:5,7,9,11:18) #rearrange column order - only for result presentation here
+getPathways("R-HSA-176949", top.level = TRUE)[, cols.order]
+```
+
+### Non-Reactome id to Entities
+
+Given an identifier in [non-Reactome resources](https://reactome.org/content/schema/objects/ReferenceDatabase), all relative __ReferenceEntities__ could be retrieved by function `map2RefEntities`. Here we focus on gene _TP53_:
+
+```{r ref-all}
+# Get the Reactome ReferenceEntity of id "TP53"
+tp53.re <- map2RefEntities("TP53")
+str(tp53.re)
+```
+
+This object is linked to UniProt with identifier P04637 and name TP53. Once the Reactome `dbId` of a non-Reactome identifier or name is obtained, the __PhysicalEntities__ associated with this non-Reactome identifier can be fetched through retrieving all attributes using `query`:
+  
+```{r ref-pe, rownames.print=FALSE}
+# Extract PhysicalEntities of "TP53"
+tp53.all.info <- query(tp53.re$dbId)
+head(tp53.all.info$physicalEntity, 5)
+```
+
+### Non-Reactome id to Events
+
+Furthermore, non-Reactome identifiers could be mapped to Reactome Events with function `map2Events`, therefore we are able to get pathways associated with _TP53_. If you stick to the gene symbol, you should specify `resource = "HGNC"`. Actually this is same as `id = P04637, resource = "UniProt"`. For reactions, specify `mapTo = "reactions"`.
+
+```{r map2Events, rownames.print=FALSE}
+# Get Pathways associated with "TP53"
+tp53.pathways <- map2Events("TP53", resource = "HGNC", species = "human", mapTo = "pathways")
+head(tp53.pathways, 5)
+```
+
+### Entity to non-Reactome ids
+
+A recap for all slots of _TP53_ Reactome object:
+
+```{r}
+str(tp53.all.info, max.level = 1)
+```
+
+Non-Reactome identifiers associated with a ReferenceEntity or PhysicalEntity can be found in these attributes of an instance:
+
+- `identifier`
+- `otherIdentifier`
+- `crossReference`
+- `geneName`
+- `secondaryIdentifier`
+- `referenceGene`
+- `referenceTranscript`
+
+### Event to non-Reactome ids
+
+Non-Reactome identifiers (`primaryIdentifier`, `secondaryIdentifier`, and `otherIdentifier`) and gene symbols associated with an Event can also be retrieved by function `event2Ids`. Here we try with Reaction "Multiple proteins are localized at replication fork" (stId R-HSA-176942):
+
+```{r event2Ids}
+# Find all non-Reactome ids for this Event
+ids <- event2Ids("R-HSA-176942")
+str(ids)
+```
+
+
+## Inferred events
+
+Reactome uses the set of manually curated Human Reactions to computationally infer reactions in fourteen evolutionarily divergent eukaryotic species for which high-quality whole-genome sequence data are available. Therefore a set of high-quality inferred Pathways, Reactions, and PhysicalEntities (proteins) exists in these species. More details about computationally inferred events could be found [here](https://reactome.org/documentation/inferred-events).
+
+We can first look at a human pathway "Stabilization of p53" with identifier R-HSA-69541 and the `orthologousEvent` slot in its Reactome Pathway object.
+
+```{r, rownames.print=FALSE}
+# Look into orthologousEvents of this pathway
+stab.p53 <- query("R-HSA-69541")
+stab.p53[["orthologousEvent"]]
+```
+
+Note that the `isInferred` value of this human instance is `FALSE`, while those of all its orthologous Events in other species are `TRUE`.
+
+```{r}
+stab.p53[["isInferred"]]
+```
+
+Conversely, if you have a non-Human Event or PhysicalEntity instance and want to get all its orthologies in other species, you could use function `getOrthology` to fetch the __Human orthologous instance__ first, then repeat the steps above:
+
+- `query` the result identifier
+- extract those in `orthologousEvent` attribute
+
+```{r getOrthology}
+# Fetch Human orthologous instance
+getOrthology("R-SSC-69541", species = "human")
+```
+
+
+## Others
+
+### Diagram exporter
+
+The Reactome [diagram exporter](https://reactome.org/dev/content-service/diagram-exporter) has been mentioned a little bit in 'Instances in Reactions' section, here we can reconstruct a few more examples.
+
+Export animaged gifs of Enhanced High Level Diagrams ([**EHLDs**](https://reactome.org/icon-info/ehld-specs-guideline)) of Pathway "Cell Cycle, Mitotic" (stId R-HSA-69278) with overlaid analysis results, and highlight "S Phase" (stId R-HSA-69242):
+
+```{r gif}
+gif <- exportImage(id = "R-HSA-69278", output = "diagram", format = "gif",
+                   sel = "R-HSA-69242", token = "MjAyMDA2MTcyMDM5NDBfMzU2")
+print(gif)
+```
+
+Further, __fireworks__ - the overview of genome-wide, hierarchical visualization of all Reactome pathways - can be exported:
+
+```{r fireworks}
+# Fireworks of Human Pathways
+exportImage(species = "9606", output = "fireworks", format = "jpg", quality = 7)
+```
+
+Full event hierarchy for any given main species in Reactome could be retrieved by function `getEventsHierarchy`, usage sees `?getEventsHierarchy`.
+
+### Event file exporter
+
+Reacome is also able to export Events in [SBGN](https://sbgn.github.io/) or [SBML](http://co.mbine.org/standards/sbml) format besides the pathway diagrams. `exportEventFile` could retrieve the content in specified format and save into a file. More details see `?exportEventFile`.
+
+```{r exportEventFile}
+file <- exportEventFile("R-HSA-432047", format = "sbgn", writeToFile = FALSE)
+```
+
+### Species in Reactome
+
+The list of all species in Reactome Database could be retrieved by function `getSpecies`. Moreover, you can specify `main = TRUE` to obtain the list of __main species__, those have either manually curated or computationally inferred pathways.
+
+```{r getSpecies, rownames.print=FALSE}
+# List main species
+getSpecies(main = TRUE)
+```
+
+### Person in Reactome
+
+The function `getPerson` will return information of a person in Reactome. All attributes in a Person object see [here](https://reactome.org/content/schema/Person). For instance, to find information about Justin Cook:
+
+```{r}
+getPerson(name = "Justin Cook")
+```
+
+
+## Session info
+
+```{r sessioninfo}
+sessionInfo()
+```
 
 

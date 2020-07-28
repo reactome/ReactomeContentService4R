@@ -5,8 +5,8 @@
   options(base.address = "https://reactome.org/ContentService")
   # welcome message
   packageStartupMessage("Connecting...", appendLF=FALSE)
-  v <- .checkVersion()
-  packageStartupMessage(paste0("welcome to Reactome v", v, "!"))
+  version <- .checkVersion()
+  packageStartupMessage(paste0("welcome to Reactome v", version, "!"))
 }
 
 
@@ -14,8 +14,8 @@
 ## Check Reactome's current version
 .checkVersion <- function() {
   url <- file.path(getOption("base.address"), "data/database/version")
-  v <- .retrieveData(url, fromJSON = F, as = "text")
-  v
+  version <- .retrieveData(url, fromJSON = FALSE, as = "text")
+  version
 }
 
 
@@ -28,7 +28,7 @@
     
     # return error message
     if (is.na(body[["messages"]])) {
-      stop(paste0("HTTP ", body[["code"]], "-", body[["reason"]], ", path:", 
+      stop(paste0("HTTP ", body[["code"]], " - ", body[["reason"]], ", path: ", 
                   gsub(".*?ContentService", "", body[["url"]]), "\n")) 
     } else {
       stop(paste0("HTTP ", body[["code"]], " - ", body[["messages"]]), "\n")
@@ -42,19 +42,21 @@
   tryCatch(
     expr = {
       res <- httr::GET(url)
-      .checkStatus(res, customizedMsg=customizedMsg)
-      data <- httr::content(res, ...)
-      if (fromJSON) data <- jsonlite::fromJSON(data)
-      return(data)
     },
     error = function(e) {
       # catch error of GET
       if (!"reactome4r" %in% (.packages())) {
-        message("Reactome is not responding. Remember to attach the package first.") 
+        message("Reactome is not responding. Remember to attach the package.") 
       }
       message(e)
     }
   )
+  
+  # return the data if the .checkStatus passed
+  .checkStatus(res, customizedMsg=customizedMsg)
+  data <- httr::content(res, ...)
+  if (fromJSON) data <- jsonlite::fromJSON(data)
+  data
 }
 
 
@@ -75,9 +77,9 @@
   
   # to see what data type this species arg is by checking which column it belongs to
   species.data.type <- colnames(all.species)[apply(all.species, 2, function(col) species %in% unlist(col))]
-  if (length(species.data.type) == 0) stop("Please input a species listed in Reactome, 
-                                           also can find more information using `getSpecies()`")
-
+  if (length(species.data.type) == 0) {
+    stop(paste0(species, " not listed in Reactome"))
+  }
   # output
   species.data.type <- species.data.type[1] # in case type==c("displayName","name")
   if (species.data.type == "name") {
@@ -109,19 +111,17 @@
 }
 
 
-#' Spell check the given search term
-#' @param query A query term
-#' @return a vector of spell-check suggestions
-#' @examples
-#' spellCheck("R-HSA-12355")
-#' spellCheck("oxidition")
-#' @rdname spellCheck
-#' @export
-
-spellCheck <- function(query) {
+## spell-check suggestions for a query term
+.spellCheck <- function(query) {
   path <- "search/spellcheck"
-  url <- file.path(getOption("base.address"), paste0(path, "?query=", query))
-  .retrieveData(url, as="text")
+  url <- file.path(getOption("base.address"), paste0(path, "?query=", gsub("\\s", "%20", query)))
+  terms <- .retrieveData(url, as="text")
+  
+  # if the term is incorrect
+  if (length(terms) != 0) {
+    check.msg <- paste0("Do you mean ", paste(terms, collapse = " / "), "?")
+    return(check.msg)
+  }
 }
 
 
