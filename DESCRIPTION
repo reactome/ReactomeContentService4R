@@ -1,5 +1,5 @@
 Package: reactome4r
-Title: R Interface for Reactome data
+Title: R Interface for Reactome Content Service
 Version: 0.0.0.9000
 Authors@R: person("Chi-Lam", "Poon", role = c("aut", "cre"), email = "clpoon807@gmail.com")
 Description: Reactome is a free, open-source, open access, curated and peer-reviewed 

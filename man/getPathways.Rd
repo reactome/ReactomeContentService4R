@@ -11,16 +11,28 @@ getPathways(id, species = NULL, allForms = FALSE, top.level = FALSE)
 
 \item{species}{name or taxon id or dbId or abbreviation of species}
 
-\item{allForms}{whether to return all low level pathways that contain the given PhysicalEntity (not Event) in all forms}
+\item{allForms}{if set to \code{TRUE}, all low level pathways that contain the given PhysicalEntity (not Event) in all forms returned}
 
-\item{top.level}{If set to \code{TRUE}, results would all be top-level pathways}
+\item{top.level}{if set to \code{TRUE}, only top-level pathways returned}
 }
 \value{
-a dataframe containing requested low level pathways
+a dataframe containing requested pathways
 }
 \description{
-Pathway related queries
+To get the Events that contain the given PhysicalEntity or Event (i.e. subpathway).
 }
 \examples{
 getPathways("R-HSA-199420", "Homo sapiens")
 }
+\seealso{
+Other getContent: 
+\code{\link{getEntities}()},
+\code{\link{getEventsHierarchy}()},
+\code{\link{getOrthology}()},
+\code{\link{getParticipants}()},
+\code{\link{getPerson}()},
+\code{\link{getSchemaClass}()},
+\code{\link{getSpecies}()},
+\code{\link{query}()}
+}
+\concept{getContent}

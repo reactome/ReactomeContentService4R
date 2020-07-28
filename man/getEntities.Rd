@@ -14,19 +14,40 @@ getEntities(
 \arguments{
 \item{id}{stable or db id of a Reactome PhysicalEntity, or id from resources other than Reactome}
 
-\item{retrieval}{entities to be retrieved}
+\item{retrieval}{entities to be retrieved, including "subunits", "complexes", "componentOf", "otherForms"}
 
 \item{resource}{resource other than Reactome, e.g. UniProt, Ensembl}
 
-\item{subunitsExcludeStructures}{whether contained complexes and entity sets are excluded when retrieving subunits}
+\item{subunitsExcludeStructures}{whether contained Complexes and EntitySets are excluded when retrieving "subunits"}
 }
 \value{
 a dataframe containing requested information
 }
 \description{
-PhysicalEntity queries
+This method retrieves instances related to PhysicalEntity.
+}
+\details{
+Details on options of \code{retrieval} arg:
+\itemize{
+\item \strong{subunits}: retrieves subunits that constitute any given Complex
+\item \strong{complexes}: retrieves Complexes that contain the given \code{id} and \code{resource}
+\item \strong{componentOf}: retrieves structures (Complexes and Sets) that include the given Entity as their component
+\item \strong{otherForms}: retrieves Entities containing all other forms of the given PhysicalEntity
+}
 }
 \examples{
-getEntities("R-HSA-5674003", "subunits")
-getEntities("P00533", "complexes", "UniProt")
+getEntities("R-HSA-5674003", retrieval="subunits")
+getEntities("P00533", retrieval="complexes", resource="UniProt")
 }
+\seealso{
+Other getContent: 
+\code{\link{getEventsHierarchy}()},
+\code{\link{getOrthology}()},
+\code{\link{getParticipants}()},
+\code{\link{getPathways}()},
+\code{\link{getPerson}()},
+\code{\link{getSchemaClass}()},
+\code{\link{getSpecies}()},
+\code{\link{query}()}
+}
+\concept{getContent}

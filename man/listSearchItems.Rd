@@ -2,7 +2,7 @@
 % Please edit documentation in R/getContent.R
 \name{listSearchItems}
 \alias{listSearchItems}
-\title{List the whole Reactome search items}
+\title{List filter items}
 \usage{
 listSearchItems(
   items = c("all", "species", "types", "compartments", "keywords"),
@@ -18,8 +18,11 @@ listSearchItems(
 available search items
 }
 \description{
-List the whole Reactome search items
+To list the available filtering options for \code{searchQuery()}, and their counts.
 }
 \examples{
-listSearchItems(items=c("species", "keyword"))
+listSearchItems()
+}
+\seealso{
+\code{\link{searchQuery}} to search in Reactome
 }

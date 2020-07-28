@@ -7,7 +7,7 @@
 discover(event.id)
 }
 \arguments{
-\item{event.id}{stable id or db id of an event}
+\item{event.id}{stable id or db id of an Event}
 }
 \value{
 a list of the event schema

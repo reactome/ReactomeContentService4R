@@ -13,8 +13,21 @@ getSpecies(main = FALSE)
 a dataframe of species information
 }
 \description{
-Species queries
+This method retrieves the list of all or main species in Reactome knowledgebase.
 }
 \examples{
+# get a list of main species
 getSpecies(main=TRUE)
 }
+\seealso{
+Other getContent: 
+\code{\link{getEntities}()},
+\code{\link{getEventsHierarchy}()},
+\code{\link{getOrthology}()},
+\code{\link{getParticipants}()},
+\code{\link{getPathways}()},
+\code{\link{getPerson}()},
+\code{\link{getSchemaClass}()},
+\code{\link{query}()}
+}
+\concept{getContent}

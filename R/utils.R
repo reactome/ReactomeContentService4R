@@ -78,7 +78,7 @@
   # to see what data type this species arg is by checking which column it belongs to
   species.data.type <- colnames(all.species)[apply(all.species, 2, function(col) species %in% unlist(col))]
   if (length(species.data.type) == 0) {
-    stop("Please input a species listed in Reactome, also can find more information using `getSpecies()`")
+    stop(paste0(species, " not listed in Reactome"))
   }
   # output
   species.data.type <- species.data.type[1] # in case type==c("displayName","name")

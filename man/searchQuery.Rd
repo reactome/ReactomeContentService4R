@@ -33,7 +33,7 @@ searchQuery(
 a list of information about the search term
 }
 \description{
-Search query
+Search for Reactome objects by name or identifiers.
 }
 \examples{
 searchQuery(query="Biological oxidation", species="Mus musculus", types=c("Pathway", "Reaction"))
