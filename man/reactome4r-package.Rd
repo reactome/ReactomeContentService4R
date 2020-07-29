@@ -4,7 +4,7 @@
 \name{reactome4r-package}
 \alias{reactome4r}
 \alias{reactome4r-package}
-\title{reactome4r: R Interface for Reactome data}
+\title{reactome4r: R Interface for Reactome Content Service}
 \description{
 Reactome is a free, open-source, open access, curated and peer-reviewed 
     knowledgebase of biomolecular pathways. reactome4r provides an interface to query Reactome 

@@ -7,16 +7,29 @@
 getOrthology(id, species)
 }
 \arguments{
-\item{id}{a stable or db id of an event or entity}
+\item{id}{a stable or db id of an Event or Entity}
 
 \item{species}{name or taxon id or dbId or abbreviation of species}
 }
 \value{
-a list containing the orthology for given event or entity in the specified species
+a list containing the orthology for given Event or Entity in the specified species
 }
 \description{
-Orthology related queries
+This function retrieves the orthology for any given Event or Entity in the specified species.
+More information on inferred events see \href{here}{https://www.reactome.org/pages/documentation/electronically-inferred-events/}.
 }
 \examples{
-getOrthology("R-HSA-5674003", "Sus scrofa")
+getOrthology("R-HSA-5674003", "pig")
 }
+\seealso{
+Other getContent: 
+\code{\link{getEntities}()},
+\code{\link{getEventsHierarchy}()},
+\code{\link{getParticipants}()},
+\code{\link{getPathways}()},
+\code{\link{getPerson}()},
+\code{\link{getSchemaClass}()},
+\code{\link{getSpecies}()},
+\code{\link{query}()}
+}
+\concept{getContent}
