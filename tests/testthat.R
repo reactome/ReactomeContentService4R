@@ -1,4 +1,4 @@
 library(testthat)
-library(reactome4r)
+library(ReactomeContentService4R)
 
-#test_check("reactome4r")
+#test_check("ReactomeContentService4R")
