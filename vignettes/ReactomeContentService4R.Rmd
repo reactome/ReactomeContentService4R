@@ -233,7 +233,7 @@ The Reactome [diagram exporter](https://reactome.org/dev/content-service/diagram
 
 What's more, Reactome offers a pathway [Analysis Service](https://reactome.org/dev/analysis) that supports enrichment and expression analysis. The diagram exporter allows you to overlay the results of the analysis on top of the exported diagrams. To do so, use the token argument to specify the unique token associated with the performed analysis.
 
-The [ReactomeGSA](https://github.com/reactome/ReactomeGSA) package is an R client to the web-based Reactome Analysis Service and we could perform analysis then access a token.
+The [ReactomeGSA](https://github.com/reactome/ReactomeGSA) package is an R client to the web-based Reactome Analysis Service, so we could perform analysis in R then access the token.
 
 ```{r ReactomeGSA, eval=FALSE}
 library(ReactomeGSA)
@@ -263,11 +263,12 @@ combined_pathways <- pathways(result)
 
 # Get the analysis token
 token <- gsub(".*=", "", result@reactome_links[[1]][["url"]])
-# select an id of the pathway with highest foldchange
+# select the id of the pathway with highest foldchange
 id <- rownames(combined_pathways[1,])
 ```
 
 ```{r get-token, include=FALSE}
+# specify token & id here so that the user needs not to install ReactomeGSA & ReactomeGSA.data
 token <- "MjAyMDA4MjgwNTMwNThfODQyMw%3D%3D"
 id <- "R-HSA-163200"
 ```
@@ -275,7 +276,7 @@ id <- "R-HSA-163200"
 We could now directly get the diagram in R:
 
 ```{r diagram}
-exportImage(id = id, output = "diagram", format = "png", token = token)
+exportImage(id = id, output = "diagram", format = "png", token = token, quality = 7)
 ```
 The output image can also saved into a file, details see `?exportImage`.
 
@@ -284,7 +285,8 @@ Further, __fireworks__ - the overview of genome-wide, hierarchical visualization
 
 ```{r fireworks}
 # Fireworks of Human Pathways
-exportImage(species = "9606", output = "fireworks", format = "jpg", quality = 7)
+exportImage(species = "9606", output = "fireworks", format = "jpg", 
+            token = token, fireworksCoverage = TRUE, quality = 7)
 ```
 
 Full event hierarchy for any given main species in Reactome could be retrieved by function `getEventsHierarchy`, usage sees `?getEventsHierarchy`.
