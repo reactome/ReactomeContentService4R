@@ -9,7 +9,7 @@
 #' 
 #' @name nonReactomeId
 #' @rdname mapId
-#' @family mapNonReactomeId
+#' @family nonReactomeId
 #' @param external.id an id from external dabatases, e.g. ChEBI, UniProt
 #' @examples
 #' map2RefEntities("15377") #ChEBI id

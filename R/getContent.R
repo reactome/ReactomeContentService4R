@@ -439,7 +439,7 @@ getSchemaClass <- function(class, species=NULL, all=FALSE, rows=1000,
   if (!is.null(species)) {
     species.id <- .matchSpecies(species, "taxId")
     cnt.url <- paste0(cnt.url, "?species=", species.id)
-    msg <- 'Note that if "species" is specified, "class" needs to be an instance of Event or PhysicalEntity'
+    msg <- 'Note that if "species" is specified, "class" needs to be an instance of Event or subclasses in PhysicalEntity'
   }
   all.cnt <- as.integer(.retrieveData(cnt.url, customizedMsg=msg, fromJSON=FALSE, as="text"))
   
