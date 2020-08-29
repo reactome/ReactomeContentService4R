@@ -10,7 +10,6 @@
 }
 
 
-
 ## Check Reactome's current version
 .checkVersion <- function() {
   url <- file.path(getOption("base.address"), "data/database/version")

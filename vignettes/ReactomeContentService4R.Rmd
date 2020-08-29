@@ -1,6 +1,6 @@
 ---
-title: "reactome4r: an R Interface for Reactome Content Service"
-author: Chi Lam Poon
+title: "ReactomeContentService4R: an R Interface for Reactome Content Service"
+author: Chi-Lam Poon
 date: "`r format(Sys.time(), '%m/%d/%Y')`"
 output: 
   rmarkdown::html_document:
@@ -10,7 +10,7 @@ output:
     highlight: tango
     df_print: paged
 vignette: >
-  %\VignetteIndexEntry{reactome4r}
+  %\VignetteIndexEntry{ReactomeContentService4R}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -18,14 +18,14 @@ vignette: >
 
 [Reactome](https://reactome.org) is a free, open-source, open access, curated and peer-reviewed knowledgebase of biomolecular pathways. Knowledge in Reactome is captured as instances of the __classes__ with their associated __attributes__. The Reactome [data model](https://reactome.org/content/schema) is comprised primarily of classes of Pathways, Reactions and PhysicalEntities (e.g. proteins, small molecules) that are organized in a hierarchical manner (Pathways contain Reactions, Reactions contain PhysicalEntities). Classes have attributes that hold properties of the represented class instances, such as names, identifiers, etc.
 
-The `reactome4r` package provides an interface to query Reactome data from the [Content Service](https://reactome.org/dev/content-service).
+The `ReactomeContentService4R` package provides an interface to query Reactome data from the [Content Service](https://reactome.org/dev/content-service).
 
 
-## `reactome4r` installation
+## `ReactomeContentService4R` installation
 
 ```{r load}
-# install.packages("reactome4r") or BiocManager::install("reactome4r")
-library(reactome4r)
+# install.packages("ReactomeContentService4R") or BiocManager::install("ReactomeContentService4R")
+library(ReactomeContentService4R)
 ```
 
 
@@ -67,7 +67,7 @@ Here we look into the _disease_ slot to find disease associated with this Pathwa
 hsa.2033519[["disease"]]
 ```
 
-### Fetch by name
+### Search for name
 
 We can see that the pathway "Activated point mutants of FGFR2" is related to two disease: "bone development disease" and "cancer". If you want to know more about bone development disease, you may try to use the `query` function again with its dbId to obtain more details. However, you would just get a Reactome Disease object that doesn't include any other biological insights in Reactome. For now, you can use `searchQuery` function which fetches all instances associated with a __term__:
 
@@ -231,19 +231,62 @@ getOrthology("R-SSC-69541", species = "human")
 
 The Reactome [diagram exporter](https://reactome.org/dev/content-service/diagram-exporter) has been mentioned a little bit in 'Instances in Reactions' section, here we can reconstruct a few more examples.
 
-Export animaged gifs of Enhanced High Level Diagrams ([**EHLDs**](https://reactome.org/icon-info/ehld-specs-guideline)) of Pathway "Cell Cycle, Mitotic" (stId R-HSA-69278) with overlaid analysis results, and highlight "S Phase" (stId R-HSA-69242):
+What's more, Reactome offers a pathway [Analysis Service](https://reactome.org/dev/analysis) that supports enrichment and expression analysis. The diagram exporter allows you to overlay the results of the analysis on top of the exported diagrams. To do so, use the token argument to specify the unique token associated with the performed analysis.
 
-```{r gif}
-gif <- exportImage(id = "R-HSA-69278", output = "diagram", format = "gif",
-                   sel = "R-HSA-69242", token = "MjAyMDA2MTcyMDM5NDBfMzU2")
-print(gif)
+The [ReactomeGSA](https://github.com/reactome/ReactomeGSA) package is an R client to the web-based Reactome Analysis Service, so we could perform analysis in R then access the token.
+
+```{r ReactomeGSA, eval=FALSE}
+library(ReactomeGSA)
+library(ReactomeGSA.data)
+data("griss_melanoma_proteomics")
+
+# Create an analysis request and set parameters
+my_request <- ReactomeAnalysisRequest(method = "Camera")
+my_request <- set_parameters(request = my_request, max_missing_values = 0.5)
+my_request <- add_dataset(request = my_request, 
+                          expression_values = griss_melanoma_proteomics, 
+                          name = "Proteomics", 
+                          type = "proteomics_int",
+                          comparison_factor = "condition", 
+                          comparison_group_1 = "MOCK", 
+                          comparison_group_2 = "MCM",
+                          additional_factors = c("cell.type", "patient.id"))
+
+# Run analysis
+result <- perform_reactome_analysis(request = my_request, compress = F)
+
+# Retrieve the fold-change data for the proteomics dataset
+proteomics_fc <- get_result(result, type = "fold_changes", name = "Proteomics")
+
+# Merge the pathway level data for all result sets
+combined_pathways <- pathways(result)
+
+# Get the analysis token
+token <- gsub(".*=", "", result@reactome_links[[1]][["url"]])
+# select the id of the pathway with highest foldchange
+id <- rownames(combined_pathways[1,])
 ```
+
+```{r get-token, include=FALSE}
+# specify token & id here so that the user needs not to install ReactomeGSA & ReactomeGSA.data
+token <- "MjAyMDA4MjgwNTMwNThfODQyMw%3D%3D"
+id <- "R-HSA-163200"
+```
+
+We could now directly get the diagram in R:
+
+```{r diagram}
+exportImage(id = id, output = "diagram", format = "png", token = token, quality = 7)
+```
+The output image can also saved into a file, details see `?exportImage`.
+
 
 Further, __fireworks__ - the overview of genome-wide, hierarchical visualization of all Reactome pathways - can be exported:
 
 ```{r fireworks}
 # Fireworks of Human Pathways
-exportImage(species = "9606", output = "fireworks", format = "jpg", quality = 7)
+exportImage(species = "9606", output = "fireworks", format = "jpg", 
+            token = token, fireworksCoverage = TRUE, quality = 7)
 ```
 
 Full event hierarchy for any given main species in Reactome could be retrieved by function `getEventsHierarchy`, usage sees `?getEventsHierarchy`.
