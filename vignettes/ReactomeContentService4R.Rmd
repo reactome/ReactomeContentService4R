@@ -21,7 +21,7 @@ vignette: >
 The `ReactomeContentService4R` package provides an interface to query Reactome data from the [Content Service](https://reactome.org/dev/content-service).
 
 
-## `ReactomeContentService4R` installation
+## Installation
 
 ```{r load}
 # install.packages("ReactomeContentService4R") or BiocManager::install("ReactomeContentService4R")
