@@ -1,5 +1,5 @@
 ---
-title: "ReactomeContentService4R: an R Interface for Reactome Content Service"
+title: "ReactomeContentService4R: an R Interface for the Reactome Content Service"
 author: Chi-Lam Poon
 date: "`r format(Sys.time(), '%m/%d/%Y')`"
 output: 
@@ -24,7 +24,7 @@ The `ReactomeContentService4R` package provides an interface to query Reactome d
 ## Installation
 
 ```{r load}
-# install.packages("ReactomeContentService4R") or BiocManager::install("ReactomeContentService4R")
+# devtools::install_github("reactome/ReactomeContentService4R")
 library(ReactomeContentService4R)
 ```
 
@@ -135,8 +135,7 @@ Given either a PhysicalEntity or an Event, the top-level pathways or lower-level
 getPathways("R-HSA-176949")
 
 # get top-level pathways
-cols.order <- c(8,6,10,1:5,7,9,11:18) #rearrange column order - only for result presentation here
-getPathways("R-HSA-176949", top.level = TRUE)[, cols.order]
+getPathways("R-HSA-176949", top.level = TRUE)
 ```
 
 ### Non-Reactome id to Entities
@@ -236,6 +235,9 @@ What's more, Reactome offers a pathway [Analysis Service](https://reactome.org/d
 The [ReactomeGSA](https://github.com/reactome/ReactomeGSA) package is an R client to the web-based Reactome Analysis Service, so we could perform analysis in R then access the token.
 
 ```{r ReactomeGSA, eval=FALSE}
+# Install GSA packages
+# devtools::install_github("reactome/ReactomeGSA")
+# devtools::install_github("reactome/ReactomeGSA.data")
 library(ReactomeGSA)
 library(ReactomeGSA.data)
 data("griss_melanoma_proteomics")
@@ -267,9 +269,9 @@ token <- gsub(".*=", "", result@reactome_links[[1]][["url"]])
 id <- rownames(combined_pathways[1,])
 ```
 
-```{r get-token, include=FALSE}
-# specify token & id here so that the user needs not to install ReactomeGSA & ReactomeGSA.data
-token <- "MjAyMDA4MjgwNTMwNThfODQyMw%3D%3D"
+```{r get-token, include=FALSE, eval=T}
+# specify token & id here so that the vignette doesn't need to install ReactomeGSA & ReactomeGSA.data
+token <- "MjAyMDEwMDIxNTUwNDVfMjc3Ng%3D%3D"
 id <- "R-HSA-163200"
 ```
 
