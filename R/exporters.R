@@ -65,7 +65,7 @@ exportEventFile <- function(id, format=c("sbgn", "sbml"), writeToFile=TRUE, file
 #' @param fireworksCoverage to overlay analysis coverage values or not in fireworks image
 #' @param file full path of the output file
 #' @param ... additional parameters passed to \code{\link[magick]{image_write}}
-#' @return an image saved into the specified path or a magick image object. More magick processing see the \href{https://cran.r-project.org/web/packages/magick/vignettes/intro.html}{vignette}.
+#' @return an image saved into the specified path or a magick image object. More magick processing see the \href{https://docs.ropensci.org/magick/}{package}.
 #' @examples
 #' \dontrun{
 #' # animated gifs of EHLDs

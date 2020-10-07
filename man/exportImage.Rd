@@ -67,7 +67,7 @@ the first one is selected. If it is not specified (null) and format is gif, then
 \item{...}{additional parameters passed to \code{\link[magick]{image_write}}}
 }
 \value{
-an image saved into the specified path or a magick image object. More magick processing see the \href{https://cran.r-project.org/web/packages/magick/vignettes/intro.html}{vignette}.
+an image saved into the specified path or a magick image object. More magick processing see the \href{https://docs.ropensci.org/magick/}{package}.
 }
 \description{
 The diagram exporter allows researchers to include images of their favorite pathway diagrams into their publications, posters or presentations.

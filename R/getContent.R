@@ -411,9 +411,11 @@ query <- function(id) {
 #' external database name) or not, default is \code{FALSE}. Only for ReferenceEntity or ExternalOntology class
 #' @return a sorted dataframe containing entries that belong to the specified schema class
 #' @examples
+#' \dontrun{
 #' getSchemaClass(class="Drug", all=TRUE)
-#' getSchemaClass(class="Regulation", rows=500, minimised=TRUE)
-#' getSchemaClass(class="Complex", species="pig", rows=100)
+#' }
+#' getSchemaClass(class="Regulation", rows=50, minimised=TRUE)
+#' getSchemaClass(class="Complex", species="pig", rows=10)
 #' @importFrom data.table rbindlist
 #' @importFrom utils setTxtProgressBar txtProgressBar
 #' @importFrom foreach foreach %dopar%

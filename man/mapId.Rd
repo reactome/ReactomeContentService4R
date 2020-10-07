@@ -36,7 +36,9 @@ Descriptions of functions:
 }
 }
 \examples{
+\dontrun{
 map2RefEntities("15377") #ChEBI id
+}
 map2Events("Q7Z569", resource="GeneCards", species="human", mapTo="reactions")
 event2Ids("R-HSA-69541")
 }

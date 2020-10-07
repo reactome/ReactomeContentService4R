@@ -12,7 +12,9 @@
 #' @family nonReactomeId
 #' @param external.id an id from external dabatases, e.g. ChEBI, UniProt
 #' @examples
+#' \dontrun{
 #' map2RefEntities("15377") #ChEBI id
+#' }
 #' @export
 
 map2RefEntities <- function(external.id) {

@@ -34,9 +34,11 @@ a sorted dataframe containing entries that belong to the specified schema class
 Fetch instances by Class. All Classes see \href{https://reactome.org/content/schema/DatabaseObject}{Reactome data schema}.
 }
 \examples{
+\dontrun{
 getSchemaClass(class="Drug", all=TRUE)
-getSchemaClass(class="Regulation", rows=500, minimised=TRUE)
-getSchemaClass(class="Complex", species="pig", rows=100)
+}
+getSchemaClass(class="Regulation", rows=50, minimised=TRUE)
+getSchemaClass(class="Complex", species="pig", rows=10)
 }
 \seealso{
 Other getContent: 
