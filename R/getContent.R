@@ -418,7 +418,7 @@ query <- function(id) {
 #' \dontrun{
 #' getSchemaClass(class="Drug", all=TRUE)
 #' }
-#' getSchemaClass(class="Regulation", rows=50, minimised=TRUE)
+#' getSchemaClass(class="Regulation", rows=15, minimised=TRUE)
 #' getSchemaClass(class="Complex", species="pig", rows=10)
 #' @importFrom data.table rbindlist
 #' @importFrom utils setTxtProgressBar txtProgressBar
