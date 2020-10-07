@@ -194,18 +194,22 @@ getParticipants <- function(event.id, retrieval=c("AllInstances", "PhysicalEntit
               id <- list$dbId
             }
             
-            if (id %in% participants$peDbId) {
-              tmp.type <- participants[participants$peDbId == id, ]$type
-              if (tmp.type != 0) {
-                participants[participants$peDbId == id, ]$type <- paste0(tmp.type, ",", component)
-              } else {
-                participants[participants$peDbId == id, ]$type <- component
-                participants[participants$peDbId == id, ]$numOfEntries <- participants[participants$peDbId == id, ]$numOfEntries + 1
-              }
+            for (i in id) {
+              if (i %in% participants$peDbId) {
+                tmp.type <- participants[participants$peDbId == i, ]$type
+                if (tmp.type != 0) {
+                  # already has role(s)
+                  participants[participants$peDbId == i, ]$type <- paste0(tmp.type, ",", component)
+                } else {
+                  participants[participants$peDbId == i, ]$type <- component
+                  participants[participants$peDbId == i, ]$numOfEntries <- participants[participants$peDbId == i, ]$numOfEntries + 1
+                }
+              } 
             }
           }
         }
       }
+      # rename
       participants$type <- gsub("catalystActivity", "catalyst", participants$type)
       participants$type <- gsub("regulatedBy", "regulator", participants$type)
       participants <- participants[ ,c("peDbId", "displayName", "schemaClass", "type", "numOfEntries", "refEntities")] # rearrange the columns
