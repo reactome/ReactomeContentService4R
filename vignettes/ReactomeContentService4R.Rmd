@@ -118,9 +118,14 @@ instances.1839098
 
 It's always a good option to visualize the instances in a reaction or pathway for better elucidations. Reactome has diagrams for pathways and reactions that provide information about connected events and their locations. The diagram exporter in Content Service allows users to easily export diagrams in bitmap format. More details see `?exportImage`.
 
-```{r image}
+```{r image, eval=FALSE}
 # Visualize above Reaction
-exportImage("R-HSA-1839098", output = "reaction", quality = 10)
+exportImage("R-HSA-1839098", output = "reaction", format = "jpg", quality = 10)
+```
+
+```{r, echo=FALSE}
+# to prevent weird warnings in the windows check
+knitr::include_graphics('img/R-HSA-1839098.jpg')
 ```
 
 
@@ -269,26 +274,31 @@ token <- gsub(".*=", "", result@reactome_links[[1]][["url"]])
 id <- rownames(combined_pathways[1,])
 ```
 
-```{r get-token, include=FALSE, eval=T}
-# specify token & id here so that the vignette doesn't need to install ReactomeGSA & ReactomeGSA.data
-token <- "MjAyMDEwMDIxNTUwNDVfMjc3Ng%3D%3D"
-id <- "R-HSA-163200"
-```
-
 We could now directly get the diagram in R:
 
-```{r diagram}
-exportImage(id = id, output = "diagram", format = "png", token = token, quality = 7)
+```{r diagram, eval=FALSE}
+exportImage(id = id, output = "diagram", format = "png", token = token, quality = 8)
 ```
+
+```{r, echo=FALSE}
+# to prevent weird warnings in the windows check
+knitr::include_graphics('img/R-HSA-163200.png')
+```
+
 The output image can also saved into a file, details see `?exportImage`.
 
 
 Further, __fireworks__ - the overview of genome-wide, hierarchical visualization of all Reactome pathways - can be exported:
 
-```{r fireworks}
+```{r fireworks, eval=FALSE}
 # Fireworks of Human Pathways
 exportImage(species = "9606", output = "fireworks", format = "jpg", 
             token = token, fireworksCoverage = TRUE, quality = 7)
+```
+
+```{r, echo=FALSE}
+# to prevent weird warnings in the windows check
+knitr::include_graphics('img/covered-fireworks.jpg')
 ```
 
 Full event hierarchy for any given main species in Reactome could be retrieved by function `getEventsHierarchy`, usage sees `?getEventsHierarchy`.
@@ -297,7 +307,7 @@ Full event hierarchy for any given main species in Reactome could be retrieved b
 
 Reacome is also able to export Events in [SBGN](https://sbgn.github.io/) or [SBML](http://co.mbine.org/standards/sbml) format besides the pathway diagrams. `exportEventFile` could retrieve the content in specified format and save into a file. More details see `?exportEventFile`.
 
-```{r exportEventFile}
+```r
 file <- exportEventFile("R-HSA-432047", format = "sbgn", writeToFile = FALSE)
 ```
 
@@ -314,7 +324,7 @@ getSpecies(main = TRUE)
 
 The function `getPerson` will return information of a person in Reactome. All attributes in a Person object see [here](https://reactome.org/content/schema/Person). For instance, to find information about Justin Cook:
 
-```{r}
+```{r person}
 getPerson(name = "Justin Cook")
 ```
 
