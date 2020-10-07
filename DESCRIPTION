@@ -1,17 +1,17 @@
 Package: ReactomeContentService4R
-Title: R Interface for Reactome Content Service
-Version: 0.0.0.9000
+Title: R Interface for the Reactome Content Service
+Version: 0.1.0
 Authors@R:
-    c(person("Chi-Lam", "Poon", role = "aut", email = "clpoon807@gmail.com", 
+    c(person("Chi-Lam", "Poon", role = c("aut", "cre"), email = "clpoon807@gmail.com", 
               comment = structure("0000-0001-6298-7099", .Names = "ORCID")),
-      person("Reactome", role = "cre", email = "help@reactome.org"))
-Description: Reactome is a free, open-source, open access, curated and peer-reviewed knowledgebase of 
-    biomolecular pathways. ReactomeContentService4R provides an interface to query data from the Reactome 
-    ContentService. Pre-built functions in the package would allow users to retrieve data such as proteins, 
-    pathways, along with other instances that are related to a specific gene or entity in Reactome.
+      person("Reactome", role = "cph", email = "help@reactome.org"))
+Description: Reactome is a free, open-source, open access, curated and peer-reviewed knowledgebase 
+    of bio-molecular pathways. Pre-built functions would allow users to retrieve data and images 
+    such as proteins, pathways, along with other instances that are related to a specific gene or 
+    entity in Reactome.
 License: file LICENSE
 Encoding: UTF-8
-LazyData: true
+BugReports: https://github.com/reactome/ReactomeContentService4R/issues
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.0
 Imports:
@@ -29,3 +29,4 @@ Suggests:
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+Language: en-US
