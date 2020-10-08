@@ -19,8 +19,9 @@ getParticipants(
 a dataframe containing requested participants
 }
 \description{
-Data in Reactome are organized in a hierarchical manner - Pathways contain Reactions, Reactions contain PhysicalEntities.
-This function is to get the participants of a given Event.
+Data in Reactome are organized in a hierarchical manner - Pathways contain Reactions,
+Reactions contain PhysicalEntities. This function is to get the participants
+of a given Event.
 }
 \details{
 Details on options of \code{retrieval} arg:

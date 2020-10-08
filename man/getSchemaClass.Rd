@@ -31,13 +31,14 @@ external database name) or not, default is \code{FALSE}. Only for ReferenceEntit
 a sorted dataframe containing entries that belong to the specified schema class
 }
 \description{
-Fetch instances by Class. All Classes see \href{https://reactome.org/content/schema/DatabaseObject}{Reactome data schema}.
+Fetch instances by Class. All Classes see
+\href{https://reactome.org/content/schema/DatabaseObject}{Reactome data schema}.
 }
 \examples{
 \dontrun{
 getSchemaClass(class="Drug", all=TRUE)
 }
-getSchemaClass(class="Regulation", rows=50, minimised=TRUE)
+getSchemaClass(class="Regulation", rows=20, minimised=TRUE)
 getSchemaClass(class="Complex", species="pig", rows=10)
 }
 \seealso{

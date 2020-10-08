@@ -42,7 +42,9 @@ discover <- function(event.id) {
 getEntities <- function(id, retrieval=c("subunits", "complexes", "componentOf", "otherForms"),
                         resource="Reactome", subunitsExcludeStructures=FALSE) {
   # check the inputs
-  if (missing(retrieval)) message("Retrieval argument not specified, retrieving 'subunits'... For 'complexes', 'componentOf', 'otherForms', specify 'retrieval'")
+  if (missing(retrieval)) {
+    message("Retrieval argument not specified, retrieving 'subunits'... For 'complexes', 'componentOf', 'otherForms', specify 'retrieval'")
+  }
   retrieval <- match.arg(retrieval, several.ok=FALSE)
   
   if (retrieval == "complexes" && resource == "Reactome") {
@@ -70,8 +72,9 @@ getEntities <- function(id, retrieval=c("subunits", "complexes", "componentOf", 
 
 #' EventsHierarchy queries
 #' 
-#' Events (Pathways and Reactions) in Reactome are organized in a hierarchical structure for every species. 
-#' By following all `hasEvent` relationships, this method retrieves the full event hierarchy for any given \strong{main species}. 
+#' Events (Pathways and Reactions) in Reactome are organized in a hierarchical 
+#' structure for every species. By following all `hasEvent` relationships, 
+#' this method retrieves the full event hierarchy for any given \strong{main species}. 
 #' 
 #' @param main.species name or taxon/db id or abbreviation of \strong{main species} in Reactome
 #' @return a nested dataframe containing full event hierarchy for a given main species
@@ -123,8 +126,9 @@ getOrthology <- function(id, species) {
 
 #' Participants related queries
 #' 
-#' Data in Reactome are organized in a hierarchical manner - Pathways contain Reactions, Reactions contain PhysicalEntities.
-#' This function is to get the participants of a given Event.
+#' Data in Reactome are organized in a hierarchical manner - Pathways contain Reactions, 
+#' Reactions contain PhysicalEntities. This function is to get the participants 
+#' of a given Event.
 #' 
 #' Details on options of `retrieval` arg:
 #' - \strong{AllInstances}: retrieves all participants (PhysicalEntities) from a given Event and their ReferenceEntities
@@ -142,12 +146,15 @@ getOrthology <- function(id, species) {
 #' @family getContent
 #' @export 
 
-getParticipants <- function(event.id, retrieval=c("AllInstances", "PhysicalEntities", "ReferenceEntities", "EventsInPathways")) {
+getParticipants <- function(event.id, retrieval=c("AllInstances", "PhysicalEntities", 
+                                                  "ReferenceEntities", "EventsInPathways")) {
   path <- "data/participants"
   
   # write url
   url <- file.path(getOption("base.address"), path, event.id) #all participants
-  if (missing(retrieval)) message("Retrieval argument not spcified, retrieving 'AllInstances'... For 'PhysicalEntities', 'ReferenceEntities', 'EventsInPathways', specify 'retrieval'")
+  if (missing(retrieval)) {
+    message("Retrieval argument not spcified, retrieving 'AllInstances'... For others, specify 'retrieval'")
+  }
   retrieval <- match.arg(retrieval, several.ok = FALSE)
   
   msg <- NULL
@@ -212,7 +219,8 @@ getParticipants <- function(event.id, retrieval=c("AllInstances", "PhysicalEntit
       # rename
       participants$type <- gsub("catalystActivity", "catalyst", participants$type)
       participants$type <- gsub("regulatedBy", "regulator", participants$type)
-      participants <- participants[ ,c("peDbId", "displayName", "schemaClass", "type", "numOfEntries", "refEntities")] # rearrange the columns
+      # rearrange the columns
+      participants <- participants[ ,c("peDbId", "displayName", "schemaClass", "type", "numOfEntries", "refEntities")]
     }
   }
   participants
@@ -267,7 +275,7 @@ getPathways <- function(id, species=NULL, allForms=FALSE, top.level=FALSE) {
     }
     stopCluster(cl)
     
-    rownames(top.pathways) <- c(1:nrow(top.pathways))
+    rownames(top.pathways) <- seq(1, nrow(top.pathways))
     return(top.pathways)
   } else {
     return(pathways)
@@ -325,10 +333,10 @@ getPerson <- function(name=NULL, id=NULL, attributes=NULL) {
     all.info <- list(Id=id)
     for (attribute in attributes) {
       tmp.url <- file.path(getOption("base.address"), path, id, attribute)
-      tmp <- .retrieveData(tmp.url, fromJSON=F, as="parse")
+      tmp <- .retrieveData(tmp.url, fromJSON=FALSE, as="parse")
       ifelse(is.character(tmp), 
              all.info[[attribute]] <- tmp, 
-             all.info[[attribute]] <- .retrieveData(tmp.url, fromJSON=T, as="text"))
+             all.info[[attribute]] <- .retrieveData(tmp.url, fromJSON=TRUE, as="text"))
     }
   }
   all.info
@@ -382,8 +390,9 @@ listSearchItems <- function(items=c("all", "species", "types", "compartments", "
 
 #' Common data retrieval
 #' 
-#' This function retrieves a Reactome Database object that has all its properties and direct relationships (relationships of depth 1) 
-#' filled, while it also includes any second level relationships regarding regulations and catalysts.
+#' This function retrieves a Reactome Database object that has all its properties 
+#' and direct relationships (relationships of depth 1) filled, while it also 
+#' includes any second level relationships regarding regulations and catalysts.
 #' 
 #' @param id a stable or db id of \strong{any} Reactome entry
 #' @return a list containing comprehensive information (all attributes) for a given id
@@ -404,7 +413,8 @@ query <- function(id) {
 
 #' Schema class queries
 #' 
-#' Fetch instances by Class. All Classes see \href{https://reactome.org/content/schema/DatabaseObject}{Reactome data schema}.
+#' Fetch instances by Class. All Classes see 
+#' \href{https://reactome.org/content/schema/DatabaseObject}{Reactome data schema}.
 #' 
 #' @param class schema class name
 #' @param species name or taxon id or dbId or abbreviation of species. Only Event and PhysicalEntity classes can specify species
@@ -418,7 +428,7 @@ query <- function(id) {
 #' \dontrun{
 #' getSchemaClass(class="Drug", all=TRUE)
 #' }
-#' getSchemaClass(class="Regulation", rows=15, minimised=TRUE)
+#' getSchemaClass(class="Regulation", rows=20, minimised=TRUE)
 #' getSchemaClass(class="Complex", species="pig", rows=10)
 #' @importFrom data.table rbindlist
 #' @importFrom utils setTxtProgressBar txtProgressBar
@@ -483,7 +493,7 @@ getSchemaClass <- function(class, species=NULL, all=FALSE, rows=1000,
   }
   
   page <- 1 #to avoid note in R check
-  final.df <- foreach(page=1:end.page, .export=c(".retrieveData", ".checkStatus"), .combine=dfcomb) %dopar% {
+  final.df <- foreach(page=seq(1, end.page), .export=c(".retrieveData", ".checkStatus"), .combine=dfcomb) %dopar% {
     setTxtProgressBar(pb, page)
     # change the offset for the last page if it's different
     if (page == end.page && exists("end.offset")) {
@@ -496,7 +506,7 @@ getSchemaClass <- function(class, species=NULL, all=FALSE, rows=1000,
   
   # sort by dbId
   final.df <- final.df[order(final.df$dbId),]
-  rownames(final.df) <- 1:nrow(final.df)
+  rownames(final.df) <- seq(1, nrow(final.df))
   final.df
 }
 
@@ -530,8 +540,9 @@ searchQuery <- function(query, species=NULL, types=NULL, compartments=NULL,
   
   ## add filters for the query
   filters <- args[!names(args) %in% c("query", "cluster", "range")]
-  if ("species" %in% names(filters)) filters[["species"]] <- .matchSpecies(filters[["species"]], "displayName")
-  
+  if ("species" %in% names(filters)) {
+    filters[["species"]] <- .matchSpecies(filters[["species"]], "displayName")
+  }
   msg <- paste0("Searching for term '", query, "'... ")
   for (filter in names(filters)) {
     msg <- paste0(msg, filter, ":'", paste(filters[[filter]], collapse = "' & '"), "' ")
@@ -557,7 +568,8 @@ searchQuery <- function(query, species=NULL, types=NULL, compartments=NULL,
 #' 
 #' This method retrieves the list of all or main species in Reactome knowledgebase.
 #' 
-#' @param main determine whether return main species, which are those have either manually curated or computationally inferred pathways
+#' @param main determine whether return main species, which are those have 
+#' either manually curated or computationally inferred pathways
 #' @return a dataframe of species information
 #' @examples
 #' # get a list of main species

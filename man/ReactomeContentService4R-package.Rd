@@ -6,20 +6,21 @@
 \alias{ReactomeContentService4R-package}
 \title{ReactomeContentService4R: R Interface for the Reactome Content Service}
 \description{
-Reactome is a free, open-source, open access, curated and peer-reviewed knowledgebase 
-    of bio-molecular pathways. Pre-built functions would allow users to retrieve data and images 
-    such as proteins, pathways, along with other instances that are related to a specific gene or 
-    entity in Reactome.
+Reactome is a free, open-source, open access, curated and peer-reviewed 
+    knowledgebase of bio-molecular pathways. Pre-built functions would allow users 
+    to retrieve data and images such as proteins, pathways, along with other 
+    instances that are related to a specific gene or entity in Reactome.
 }
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://github.com/reactome/ReactomeContentService4R}
   \item Report bugs at \url{https://github.com/reactome/ReactomeContentService4R/issues}
 }
 
 }
 \author{
-\strong{Maintainer}: Chi-Lam Poon \email{clpoon807@gmail.com} (\href{https://orcid.org/0000-0001-6298-7099}{ORCID})
+\strong{Maintainer}: Chi-Lam Poon \email{clpoon807@gmail.com}
 
 Other contributors:
 \itemize{
