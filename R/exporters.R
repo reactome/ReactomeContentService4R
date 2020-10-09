@@ -72,15 +72,15 @@ exportEventFile <- function(id, format=c("sbgn", "sbml"),
 #' @param expColumn the specific expression analysis results column to be overlaid. 
 #' If it is not specified (null), the first one is selected. If it is not specified (null) 
 #' and format is gif, then an animated gif is generated with all the columns.
-#' @param fireworksCoverage to overlay analysis coverage values or not in fireworks image
+#' @param fireworksCoverage set `TRUE` to overlay analysis coverage values in a fireworks image
 #' @param file full path of the output file
 #' @param ... additional parameters passed to \code{\link[magick]{image_write}}
 #' @return an image saved into the specified path or a magick image object. 
 #' More magick processing see the \href{https://docs.ropensci.org/magick/}{package}.
 #' @examples
 #' # fireworks
-#' fw <- exportImage(species="9606", output="fireworks", format="jpg",
-#'                   quality=7, sel="R-HSA-68918")
+#' fw <- exportImage(species="9606", output="fireworks", 
+#'                   format="jpg", quality=7)
 #' print(fw)
 #' 
 #' \dontrun{
@@ -123,7 +123,8 @@ exportImage <- function(id=NULL, output=c("diagram", "fireworks", "reaction"),
                    paste0(id, ".", format, "?quality=", quality))
   
   # add other parameters to url
-  boolean.args <- sapply(args, is.logical) #turn boolean arguments into lower case characters
+  ## turn boolean arguments into lower case characters
+  boolean.args <- vapply(args, is.logical, logical(1))
   args[boolean.args] <- lapply(args[boolean.args], tolower)
   args <- args[!names(args) %in% c("id", "output", "species", "format", "quality", "file", names(list(...)))]
   

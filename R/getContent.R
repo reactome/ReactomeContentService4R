@@ -379,7 +379,7 @@ listSearchItems <- function(items=c("all", "species", "types", "compartments", "
   # modify final return
   if (!facet) {
     # remove the counts
-    final.list <- final.list[sapply(final.list, function(x) inherits(x, "data.frame"))]
+    final.list <- final.list[vapply(final.list, function(x) inherits(x, "data.frame"), logical(1))]
     final.list <- lapply(final.list, function(x) data.frame(name=x$name))
     names(final.list) <- gsub("Facet$", "", names(final.list))
   }
@@ -534,7 +534,8 @@ searchQuery <- function(query, species=NULL, types=NULL, compartments=NULL,
                         keywords=NULL, cluster=TRUE, range=NULL) {
   # write full url
   args <- as.list(environment())
-  args <- args[sapply(args, function(arg) !is.null(arg))]
+  args <- args[vapply(args, function(arg) !is.null(arg), logical(1))]
+  print(names(args))
   path <- "search/query"
   url <- file.path(getOption("base.address"), paste0(path, "?query=", gsub("\\s", "%20", query)))
   

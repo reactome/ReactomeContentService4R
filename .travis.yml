@@ -3,6 +3,8 @@
 language: R
 cache: packages
 
+bioc_check: true
+
 addons:
   apt:
     update: true

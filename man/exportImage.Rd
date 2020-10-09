@@ -61,7 +61,7 @@ exportImage(
 If it is not specified (null), the first one is selected. If it is not specified (null)
 and format is gif, then an animated gif is generated with all the columns.}
 
-\item{fireworksCoverage}{to overlay analysis coverage values or not in fireworks image}
+\item{fireworksCoverage}{set \code{TRUE} to overlay analysis coverage values in a fireworks image}
 
 \item{file}{full path of the output file}
 
@@ -78,8 +78,8 @@ see Reactome \href{https://reactome.org/dev/content-service/diagram-exporter}{di
 }
 \examples{
 # fireworks
-fw <- exportImage(species="9606", output="fireworks", format="jpg",
-                  quality=7, sel="R-HSA-68918")
+fw <- exportImage(species="9606", output="fireworks", 
+                  format="jpg", quality=7)
 print(fw)
 
 \dontrun{
