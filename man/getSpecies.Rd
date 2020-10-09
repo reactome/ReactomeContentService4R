@@ -7,7 +7,8 @@
 getSpecies(main = FALSE)
 }
 \arguments{
-\item{main}{determine whether return main species, which are those have either manually curated or computationally inferred pathways}
+\item{main}{determine whether return main species, which are those have
+either manually curated or computationally inferred pathways}
 }
 \value{
 a dataframe of species information

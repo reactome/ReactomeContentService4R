@@ -13,8 +13,9 @@ getEventsHierarchy(main.species)
 a nested dataframe containing full event hierarchy for a given main species
 }
 \description{
-Events (Pathways and Reactions) in Reactome are organized in a hierarchical structure for every species.
-By following all \code{hasEvent} relationships, this method retrieves the full event hierarchy for any given \strong{main species}.
+Events (Pathways and Reactions) in Reactome are organized in a hierarchical
+structure for every species. By following all \code{hasEvent} relationships,
+this method retrieves the full event hierarchy for any given \strong{main species}.
 }
 \examples{
 \dontrun{

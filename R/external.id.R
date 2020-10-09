@@ -12,7 +12,10 @@
 #' @family nonReactomeId
 #' @param external.id an id from external dabatases, e.g. ChEBI, UniProt
 #' @examples
+#' \dontrun{
 #' map2RefEntities("15377") #ChEBI id
+#' }
+#' @return a list of ReferenceEntity information
 #' @export
 
 map2RefEntities <- function(external.id) {
@@ -31,6 +34,7 @@ map2RefEntities <- function(external.id) {
 #' map2Events("Q7Z569", resource="GeneCards", species="human", mapTo="reactions")
 #' @rdname mapId
 #' @family nonReactomeId
+#' @return a dataframe of Events associated with the given id
 #' @export 
 
 map2Events <- function(external.id, resource, species, mapTo=c("pathways", "reactions")) {
@@ -38,7 +42,8 @@ map2Events <- function(external.id, resource, species, mapTo=c("pathways", "reac
   if (missing(mapTo)) message("MapTo argument not specified, mapping to pathways... For reactions, specify mapTo='reactions'")
   mapTo <- match.arg(mapTo, several.ok=FALSE)
   taxon.id <- .matchSpecies(species, "taxId")
-  url <- file.path(getOption("base.address"), path, resource, external.id, paste0(mapTo, "?species=", taxon.id))
+  url <- file.path(getOption("base.address"), path, resource, 
+                   external.id, paste0(mapTo, "?species=", taxon.id))
   .retrieveData(url, as="text")
 }
 
@@ -49,6 +54,7 @@ map2Events <- function(external.id, resource, species, mapTo=c("pathways", "reac
 #' event2Ids("R-HSA-69541")
 #' @rdname mapId
 #' @family nonReactomeId
+#' @return non-Reactome ids associated with a given Event
 #' @export
 
 event2Ids <- function(event.id) {

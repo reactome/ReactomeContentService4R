@@ -6,11 +6,16 @@
 #' Export Reactome pathway diagrams in SBGN or SBML format.
 #' 
 #' @param id a stable or db id of an Event (Pathway or Reaction)
-#' @param format either in "sbgn" (SBGN, Systems Biology Graphical Notation) or "sbml" (SBML, Systems Biology Markup Language)
-#' @param writeToFile If set to `TRUE`, the returned data would be written into a file. If `file=NULL`, the output file will be automatically saved into the working directory and named based on the `id` and `format`
+#' @param format either in "sbgn" (SBGN, Systems Biology Graphical Notation) or 
+#' "sbml" (SBML, Systems Biology Markup Language)
+#' @param writeToFile If set to `TRUE`, the returned data would be written into a file. 
+#' If `file=NULL`, the output file will be automatically saved into the working 
+#' directory and named based on the `id` and `format`
 #' @param file full path of the output file
-#' @return a character object with the content of SBGN/SBML for a given id, or a SBGN/SMBL file saved into the specified path.
-#' If the output is empty character or list, please check on \href{https://reactome.org/ContentService/}{ContentService} or contact HelpDesk \email{help@@reactome.org}.
+#' @return a character object with the content of SBGN/SBML for a given id, or 
+#' a SBGN/SMBL file saved into the specified path. If the output is empty character 
+#' or list, please check on \href{https://reactome.org/ContentService/}{ContentService} 
+#' or contact HelpDesk \email{help@@reactome.org}.
 #' @examples
 #' exportEventFile("R-HSA-432047", "sbgn", writeToFile=FALSE)
 #' \dontrun{exportEventFile("R-HSA-68616", "sbml", file="orc.assembly.sbml")}
@@ -19,10 +24,13 @@
 #' @family exporter
 #' @export
 
-exportEventFile <- function(id, format=c("sbgn", "sbml"), writeToFile=TRUE, file=NULL) {
+exportEventFile <- function(id, format=c("sbgn", "sbml"), 
+                            writeToFile=TRUE, file=NULL) {
   # write url
   path <- "exporter/event"
-  if (missing(format)) message("Format argument not specified, exporting in SGBN format... For SBML, specify format='sbml'")
+  if (missing(format)) {
+    message("Format argument not specified, exporting in SGBN format... For SBML, specify format='sbml'")
+  }
   format <- match.arg(format, several.ok=FALSE)
   url <- file.path(getOption("base.address"), path, paste0(id, ".", format))
   file.content <- .retrieveData(url, fromJSON=FALSE, as="text")
@@ -42,8 +50,9 @@ exportEventFile <- function(id, format=c("sbgn", "sbml"), writeToFile=TRUE, file
 
 #' Image exporter
 #' 
-#' The diagram exporter allows researchers to include images of their favorite pathway diagrams into their publications, posters or presentations.
-#' For details see Reactome [diagram exporter](https://reactome.org/dev/content-service/diagram-exporter) guide.
+#' The diagram exporter allows researchers to include images of their favorite 
+#' pathway diagrams into their publications, posters or presentations. For details 
+#' see Reactome [diagram exporter](https://reactome.org/dev/content-service/diagram-exporter) guide.
 #' 
 #' @param id stable or db id of a ReactionLikeEvent for "reaction" output, or id of an Event for "diagram"
 #' @param output type of exported image including "diagram", "fireworks", "reaction"
@@ -60,24 +69,26 @@ exportEventFile <- function(id, format=c("sbgn", "sbml"), writeToFile=TRUE, file
 #' @param token token from Reactome \href{https://reactome.org/dev/analysis}{Analysis Service}
 #' @param resource the analysis resource for which the results will be overlaid on top of the given pathways overview
 #' @param analysisProfile analysis color profile including "Standard", "Strosobar", "Copper%20plus"
-#' @param expColumn the specific expression analysis results column to be overlaid. If it is not specified (null),
-#' the first one is selected. If it is not specified (null) and format is gif, then an animated gif is generated with all the columns.
-#' @param fireworksCoverage to overlay analysis coverage values or not in fireworks image
+#' @param expColumn the specific expression analysis results column to be overlaid. 
+#' If it is not specified (null), the first one is selected. If it is not specified (null) 
+#' and format is gif, then an animated gif is generated with all the columns.
+#' @param fireworksCoverage set `TRUE` to overlay analysis coverage values in a fireworks image
 #' @param file full path of the output file
 #' @param ... additional parameters passed to \code{\link[magick]{image_write}}
-#' @return an image saved into the specified path or a magick image object. More magick processing see the \href{https://cran.r-project.org/web/packages/magick/vignettes/intro.html}{vignette}.
+#' @return an image saved into the specified path or a magick image object. 
+#' More magick processing see the \href{https://docs.ropensci.org/magick/}{package}.
 #' @examples
+#' # fireworks
+#' fw <- exportImage(species="9606", output="fireworks", 
+#'                   format="jpg", quality=7)
+#' print(fw)
+#' 
 #' \dontrun{
 #' # animated gifs of EHLDs
+#' # can use your own token
 #' gif <- exportImage(id="R-HSA-69278", output="diagram", format="gif",
 #'                    sel="R-HSA-69242", token="MjAyMDA2MTcyMDM5NDBfMzU2")
 #' print(gif)
-#'
-#' # fireworks
-#' fw <- exportImage(species="9606", output="fireworks", format="jpg",
-#'                   quality=7, sel="R-HSA-68918")
-#' ## System dependent
-#' magick::image_browse(fw)
 #'
 #' # reaction
 #' exportImage(id="R-HSA-6787403", output="reaction", format="svg",
@@ -97,18 +108,23 @@ exportImage <- function(id=NULL, output=c("diagram", "fireworks", "reaction"),
                         fireworksCoverage=FALSE, file=NULL, ...) {
   
   # ensure the arguments
-  if (missing(format)) message("Format argument not spcified, exporting as 'png'... For 'jpg', 'jpeg', 'svg', 'gif', specify 'format'")
+  if (missing(format)) {
+    message("Format argument not spcified, exporting as 'png'... For 'jpg', 'jpeg', 'svg', 'gif', specify 'format'")
+  }
   output <- match.arg(output, several.ok=FALSE)
   format <- match.arg(format, several.ok=FALSE)
   
   args <- c(as.list(environment()), list(...)) #collect arguments
-  if (output == "fireworks") id <- .matchSpecies(species, "taxId") #replace id with taxon id
+  #replace id with taxon id
+  if (output == "fireworks") id <- .matchSpecies(species, "taxId")
   
   # add path and quality parameter to url
-  url <- file.path(getOption("base.address"), "exporter", output, paste0(id, ".", format, "?quality=", quality))
+  url <- file.path(getOption("base.address"), "exporter", output, 
+                   paste0(id, ".", format, "?quality=", quality))
   
   # add other parameters to url
-  boolean.args <- sapply(args, is.logical) #turn boolean arguments into lower case characters
+  ## turn boolean arguments into lower case characters
+  boolean.args <- vapply(args, is.logical, logical(1))
   args[boolean.args] <- lapply(args[boolean.args], tolower)
   args <- args[!names(args) %in% c("id", "output", "species", "format", "quality", "file", names(list(...)))]
   

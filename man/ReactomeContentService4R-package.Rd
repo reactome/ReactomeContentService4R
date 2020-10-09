@@ -4,19 +4,27 @@
 \name{ReactomeContentService4R-package}
 \alias{ReactomeContentService4R}
 \alias{ReactomeContentService4R-package}
-\title{ReactomeContentService4R: R Interface for Reactome Content Service}
+\title{ReactomeContentService4R: R Interface for the Reactome Content Service}
 \description{
-Reactome is a free, open-source, open access, curated and peer-reviewed knowledgebase of 
-    biomolecular pathways. ReactomeContentService4R provides an interface to query data from the Reactome 
-    ContentService. Pre-built functions in the package would allow users to retrieve data such as proteins, 
-    pathways, along with other instances that are related to a specific gene or entity in Reactome.
+Reactome is a free, open-source, open access, curated and peer-reviewed 
+    knowledgebase of bio-molecular pathways. Pre-built functions would allow users 
+    to retrieve data and images such as proteins, pathways, along with other 
+    instances that are related to a specific gene or entity in Reactome.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/reactome/ReactomeContentService4R}
+  \item Report bugs at \url{https://github.com/reactome/ReactomeContentService4R/issues}
+}
+
 }
 \author{
-\strong{Maintainer}: Reactome \email{help@reactome.org}
+\strong{Maintainer}: Chi-Lam Poon \email{clpoon807@gmail.com}
 
-Authors:
+Other contributors:
 \itemize{
-  \item Chi-Lam Poon \email{clpoon807@gmail.com} (\href{https://orcid.org/0000-0001-6298-7099}{ORCID})
+  \item Reactome \email{help@reactome.org} [copyright holder]
 }
 
 }

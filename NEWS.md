@@ -1,3 +1,3 @@
-# reactome4r 0.0.0.9000
+# ReactomeContentService4R 0.1
 
-* Added a `NEWS.md` file to track changes to the package.
+First release

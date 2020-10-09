@@ -13,8 +13,9 @@ query(id)
 a list containing comprehensive information (all attributes) for a given id
 }
 \description{
-This function retrieves a Reactome Database object that has all its properties and direct relationships (relationships of depth 1)
-filled, while it also includes any second level relationships regarding regulations and catalysts.
+This function retrieves a Reactome Database object that has all its properties
+and direct relationships (relationships of depth 1) filled, while it also
+includes any second level relationships regarding regulations and catalysts.
 }
 \examples{
 query("R-HSA-60140")
