@@ -535,7 +535,6 @@ searchQuery <- function(query, species=NULL, types=NULL, compartments=NULL,
   # write full url
   args <- as.list(environment())
   args <- args[vapply(args, function(arg) !is.null(arg), logical(1))]
-  print(names(args))
   path <- "search/query"
   url <- file.path(getOption("base.address"), paste0(path, "?query=", gsub("\\s", "%20", query)))
   
