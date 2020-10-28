@@ -4,10 +4,11 @@ Version: 0.99.0
 Authors@R: c(
     person("Chi-Lam", "Poon", role = c("aut", "cre"), email = "clpoon807@gmail.com"),
     person("Reactome", role = "cph", email = "help@reactome.org"))
-Description: Reactome is a free, open-source, open access, curated and peer-reviewed 
-    knowledgebase of bio-molecular pathways. Pre-built functions would allow users 
-    to retrieve data and images such as proteins, pathways, along with other 
-    instances that are related to a specific gene or entity in Reactome.
+Description: Reactome is a free, open-source, open access, curated and 
+    peer-reviewed knowledgebase of bio-molecular pathways. This package is to 
+    interact with the Reactome Content Service API. Pre-built functions would 
+    allow users to retrieve data and images that consist of proteins, pathways, 
+    and other molecules related to a specific gene or entity in Reactome.
 License: file LICENSE
 Encoding: UTF-8
 URL: https://github.com/reactome/ReactomeContentService4R
