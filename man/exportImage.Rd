@@ -57,19 +57,20 @@ exportImage(
 
 \item{analysisProfile}{analysis color profile including "Standard", "Strosobar", "Copper\%20plus"}
 
-\item{expColumn}{the specific expression analysis results column to be overlaid.
-If it is not specified (null), the first one is selected. If it is not specified (null)
-and format is gif, then an animated gif is generated with all the columns.}
+\item{expColumn}{the specific expression analysis results column to be
+overlaid. If it is not specified (null), the first one is selected. If it is
+not specified (null) and format is gif, then an animated gif is generated
+with all the columns.}
 
 \item{fireworksCoverage}{set \code{TRUE} to overlay analysis coverage values in a fireworks image}
 
 \item{file}{full path of the output file}
 
-\item{...}{additional parameters passed to \code{\link[magick]{image_write}}}
+\item{...}{additional parameters passed to \code{\link[magick:editing]{magick::image_write()}}}
 }
 \value{
 an image saved into the specified path or a magick image object.
-More magick processing see the \href{https://docs.ropensci.org/magick/}{package}.
+More magick processing see the \href{https://docs.ropensci.org/magick}{package}.
 }
 \description{
 The diagram exporter allows researchers to include images of their favorite
@@ -77,12 +78,12 @@ pathway diagrams into their publications, posters or presentations. For details
 see Reactome \href{https://reactome.org/dev/content-service/diagram-exporter}{diagram exporter} guide.
 }
 \examples{
-# fireworks
-fw <- exportImage(species="9606", output="fireworks", 
-                  format="jpg", quality=7)
-print(fw)
-
 \dontrun{
+
+# fireworks
+exportImage(species="9606", output="fireworks", 
+            format="jpg", quality=7)
+
 # animated gifs of EHLDs
 # can use your own token
 gif <- exportImage(id="R-HSA-69278", output="diagram", format="gif",
@@ -91,11 +92,12 @@ print(gif)
 
 # reaction
 exportImage(id="R-HSA-6787403", output="reaction", format="svg",
-            flg="MTO1", analysisProfile="Copper\%20plus", file="R-HSA-6787403.svg")
+       flg="MTO1", analysisProfile="Copper\%20plus", file="R-HSA-6787403.svg")
+
 }
 }
 \seealso{
-\code{\link[magick]{magick}} to further process the image object
+\link{magick} to further process the image object
 
 Other exporter: 
 \code{\link{exportEventFile}()}

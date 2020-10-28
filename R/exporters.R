@@ -8,9 +8,9 @@
 #' @param id a stable or db id of an Event (Pathway or Reaction)
 #' @param format either in "sbgn" (SBGN, Systems Biology Graphical Notation) or 
 #' "sbml" (SBML, Systems Biology Markup Language)
-#' @param writeToFile If set to `TRUE`, the returned data would be written into a file. 
-#' If `file=NULL`, the output file will be automatically saved into the working 
-#' directory and named based on the `id` and `format`
+#' @param writeToFile If set to `TRUE`, the returned data would be written into 
+#' a file. If `file=NULL`, the output file will be automatically saved into the 
+#' working directory and named based on the `id` and `format`
 #' @param file full path of the output file
 #' @return a character object with the content of SBGN/SBML for a given id, or 
 #' a SBGN/SMBL file saved into the specified path. If the output is empty character 
@@ -66,24 +66,25 @@ exportEventFile <- function(id, format=c("sbgn", "sbml"),
 #' @param margin defines the image margin between 0-20, default is 15
 #' @param ehld whether textbook-like illustration are taken into account
 #' @param diagramProfile color profile, "modern" or "standard"
-#' @param token token from Reactome \href{https://reactome.org/dev/analysis}{Analysis Service}
+#' @param token token from Reactome [Analysis Service](https://reactome.org/dev/analysis)
 #' @param resource the analysis resource for which the results will be overlaid on top of the given pathways overview
 #' @param analysisProfile analysis color profile including "Standard", "Strosobar", "Copper%20plus"
-#' @param expColumn the specific expression analysis results column to be overlaid. 
-#' If it is not specified (null), the first one is selected. If it is not specified (null) 
-#' and format is gif, then an animated gif is generated with all the columns.
+#' @param expColumn the specific expression analysis results column to be 
+#' overlaid. If it is not specified (null), the first one is selected. If it is 
+#' not specified (null) and format is gif, then an animated gif is generated 
+#' with all the columns.
 #' @param fireworksCoverage set `TRUE` to overlay analysis coverage values in a fireworks image
 #' @param file full path of the output file
-#' @param ... additional parameters passed to \code{\link[magick]{image_write}}
+#' @param ... additional parameters passed to [magick::image_write()]
 #' @return an image saved into the specified path or a magick image object. 
-#' More magick processing see the \href{https://docs.ropensci.org/magick/}{package}.
+#' More magick processing see the [package](https://docs.ropensci.org/magick).
 #' @examples
-#' # fireworks
-#' fw <- exportImage(species="9606", output="fireworks", 
-#'                   format="jpg", quality=7)
-#' print(fw)
-#' 
 #' \dontrun{
+#' 
+#' # fireworks
+#' exportImage(species="9606", output="fireworks", 
+#'             format="jpg", quality=7)
+#' 
 #' # animated gifs of EHLDs
 #' # can use your own token
 #' gif <- exportImage(id="R-HSA-69278", output="diagram", format="gif",
@@ -92,12 +93,13 @@ exportEventFile <- function(id, format=c("sbgn", "sbml"),
 #'
 #' # reaction
 #' exportImage(id="R-HSA-6787403", output="reaction", format="svg",
-#'             flg="MTO1", analysisProfile="Copper%20plus", file="R-HSA-6787403.svg")
+#'        flg="MTO1", analysisProfile="Copper%20plus", file="R-HSA-6787403.svg")
+#' 
 #' }
 #' @importFrom magick image_read_svg image_read image_write
 #' @rdname exportImage
 #' @family exporter
-#' @seealso \code{\link[magick]{magick}} to further process the image object
+#' @seealso [magick] to further process the image object
 #' @export
 
 exportImage <- function(id=NULL, output=c("diagram", "fireworks", "reaction"),

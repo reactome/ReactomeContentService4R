@@ -6,10 +6,11 @@
 \alias{ReactomeContentService4R-package}
 \title{ReactomeContentService4R: R Interface for the Reactome Content Service}
 \description{
-Reactome is a free, open-source, open access, curated and peer-reviewed 
-    knowledgebase of bio-molecular pathways. Pre-built functions would allow users 
-    to retrieve data and images such as proteins, pathways, along with other 
-    instances that are related to a specific gene or entity in Reactome.
+Reactome is a free, open-source, open access, curated and 
+    peer-reviewed knowledgebase of bio-molecular pathways. This package is to 
+    interact with the Reactome Content Service API. Pre-built functions would 
+    allow users to retrieve data and images that consist of proteins, pathways, 
+    and other molecules related to a specific gene or entity in Reactome.
 }
 \seealso{
 Useful links:
