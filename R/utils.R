@@ -44,7 +44,7 @@
     },
     error = function(e) {
       # catch error of GET
-      if (!"reactome4r" %in% (.packages())) {
+      if (!"ReactomeContentService4R" %in% (.packages())) {
         message("Reactome is not responding. Remember to attach the package.") 
       }
       message(e)
@@ -110,15 +110,21 @@
 }
 
 
-## spell-check suggestions for a query term
-.spellCheck <- function(query) {
+#' Spell-check suggestions for a given query
+#' @param query a search term
+#' @examples
+#' spellCheck("intelukin")
+#' @return spell-check suggestions for a given search term
+#' @export
+
+spellCheck <- function(query) {
   path <- "search/spellcheck"
   url <- file.path(getOption("base.address"), paste0(path, "?query=", gsub("\\s", "%20", query)))
   terms <- .retrieveData(url, as="text")
   
   # if the term is incorrect
   if (length(terms) != 0) {
-    check.msg <- paste0("Do you mean ", paste(terms, collapse = " / "), "?")
+    check.msg <- paste0("Did you mean ", paste(sQuote(terms), collapse = ", "), "?")
     return(check.msg)
   }
 }

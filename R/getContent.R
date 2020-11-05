@@ -558,7 +558,7 @@ searchQuery <- function(query, species=NULL, types=NULL, compartments=NULL,
   if (!is.null(range)) url <- paste0(url, "&Start%20row=", range[1], "&rows=", range[2])
   
   # retrieve
-  check.msg <- .spellCheck(query)
+  check.msg <- spellCheck(query)
   .retrieveData(url, customizedMsg=check.msg, as="text")
 }
 
