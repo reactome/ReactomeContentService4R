@@ -1,9 +1,10 @@
 Package: ReactomeContentService4R
 Title: R Interface for the Reactome Content Service
-Version: 0.99.2
-Authors@R: c(
-    person("Chi-Lam", "Poon", role = c("aut", "cre"), email = "clpoon807@gmail.com"),
-    person("Reactome", role = "cph", email = "help@reactome.org"))
+Version: 0.99.3
+Authors@R: c(person("Chi-Lam", "Poon", role = c("aut", "cre"), 
+                    email = "clpoon807@gmail.com",
+                    comment = c(ORCID = "0000-0001-6298-7099")),
+             person("Reactome", role = "cph", email = "help@reactome.org"))
 Description: Reactome is a free, open-source, open access, curated and 
     peer-reviewed knowledgebase of bio-molecular pathways. This package is to 
     interact with the Reactome Content Service API. Pre-built functions would 
@@ -19,7 +20,7 @@ Imports:
     httr,
     jsonlite,
     utils,
-    magick,
+    magick (>= 2.5.1),
     data.table,
     doParallel,
     foreach,
