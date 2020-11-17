@@ -19,25 +19,30 @@
 
 
 ## Check the status of http response
-.checkStatus <- function(res, customizedMsg=NULL) {
+.checkStatus <- function(res, customMsg=NULL) {
   if (httr::status_code(res) != 200) {
     body <- jsonlite::fromJSON(httr::content(res, "text"))
-    # print customized message
-    if (!is.null(customizedMsg)) message(paste0(customizedMsg,"\n"))
+    # print custom message
+    if (!is.null(customMsg)) message(paste0(customMsg,"\n"))
     
     # return error message
     if (is.na(body[["messages"]])) {
-      stop(paste0("HTTP ", body[["code"]], " - ", body[["reason"]], ", path: ", 
-                  gsub(".*?ContentService", "", body[["url"]]), "\n")) 
+      warning(paste0("HTTP ",body[["code"]], " - ", body[["reason"]],", path: ", 
+                     gsub(".*?ContentService", "", body[["url"]]), "\n")) 
     } else {
-      stop(paste0("HTTP ", body[["code"]], " - ", body[["messages"]]), "\n")
+      warning(paste0("HTTP ", body[["code"]], " - ", body[["messages"]]), "\n")
     }
+    # no pass
+    FALSE
+  } else{
+    # pass
+    TRUE
   }
 }
 
 
 ## retrieve data
-.retrieveData <- function(url, customizedMsg=NULL, fromJSON=TRUE, ...) {
+.retrieveData <- function(url, customMsg=NULL, fromJSON=TRUE, ...) {
   tryCatch(
     expr = {
       res <- httr::GET(url)
@@ -51,11 +56,16 @@
     }
   )
   
-  # return the data if the .checkStatus passed
-  .checkStatus(res, customizedMsg=customizedMsg)
-  data <- httr::content(res, ...)
-  if (fromJSON) data <- jsonlite::fromJSON(data)
-  data
+  # return the data if .checkStatus() passed
+  status <- .checkStatus(res, customMsg=customMsg)
+  if (status) {
+    data <- httr::content(res, ...)
+    if (fromJSON) data <- jsonlite::fromJSON(data)
+    data 
+  } else {
+    # return NULL if not getting correct response
+    NULL
+  }
 }
 
 
@@ -77,7 +87,7 @@
   # to see what data type this species arg is by checking which column it belongs to
   species.data.type <- colnames(all.species)[apply(all.species, 2, function(col) species %in% unlist(col))]
   if (length(species.data.type) == 0) {
-    stop(paste0(species, " not listed in Reactome"))
+    warning(paste0(species, " not listed in Reactome"))
   }
   # output
   species.data.type <- species.data.type[1] # in case type==c("displayName","name")
@@ -86,7 +96,7 @@
   } else {
     species.row <- all.species[all.species[[species.data.type]] == species, ] 
   }
-
+  
   if (nrow(species.row) > 1) {
     warning("This species is not unique, please use IDs or full name instead")
     return(species.row)
@@ -128,5 +138,4 @@ spellCheck <- function(query) {
     return(check.msg)
   }
 }
-
 
