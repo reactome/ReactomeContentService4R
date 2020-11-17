@@ -79,14 +79,13 @@ exportEventFile <- function(id, format=c("sbgn", "sbml"),
 #' @return an image saved into the specified path or a magick image object. 
 #' More magick processing see the [package](https://docs.ropensci.org/magick).
 #' @examples
-#' \dontrun{
-#' 
 #' # fireworks
 #' exportImage(species="9606", output="fireworks", 
 #'             format="jpg", quality=7)
 #' 
+#' \dontrun{
 #' # animated gifs of EHLDs
-#' # can use your own token
+#' # can use your own token from your Reactome Analysis
 #' gif <- exportImage(id="R-HSA-69278", output="diagram", format="gif",
 #'                    sel="R-HSA-69242", token="MjAyMDA2MTcyMDM5NDBfMzU2")
 #' print(gif)

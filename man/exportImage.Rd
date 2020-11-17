@@ -78,14 +78,13 @@ pathway diagrams into their publications, posters or presentations. For details
 see Reactome \href{https://reactome.org/dev/content-service/diagram-exporter}{diagram exporter} guide.
 }
 \examples{
-\dontrun{
-
 # fireworks
 exportImage(species="9606", output="fireworks", 
             format="jpg", quality=7)
 
+\dontrun{
 # animated gifs of EHLDs
-# can use your own token
+# can use your own token from your Reactome Analysis
 gif <- exportImage(id="R-HSA-69278", output="diagram", format="gif",
                    sel="R-HSA-69242", token="MjAyMDA2MTcyMDM5NDBfMzU2")
 print(gif)
