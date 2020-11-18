@@ -119,7 +119,7 @@ getOrthology <- function(id, species) {
   # retrieve data
   cat(paste0("Returning inferred instances of ", id, " in species ", species.name, "...\n"))
   note.msg <- "Note that only orthologous Events or Entities in a different species can be retrieved"
-  .retrieveData(url, customizedMsg=note.msg, as="text")
+  .retrieveData(url, customMsg=note.msg, as="text")
 }
 
 
@@ -169,7 +169,7 @@ getParticipants <- function(event.id, retrieval=c("AllInstances", "PhysicalEntit
   }
   
   # retrieve
-  participants <- .retrieveData(url, customizedMsg=msg, as="text")
+  participants <- .retrieveData(url, customMsg=msg, as="text")
   
   # annotate instances in ReactionLikeEvents if retrieving AllInstances
   if (retrieval == "AllInstances") {
@@ -457,7 +457,7 @@ getSchemaClass <- function(class, species=NULL, all=FALSE, rows=1000,
     cnt.url <- paste0(cnt.url, "?species=", species.id)
     msg <- 'Note that if "species" is specified, "class" needs to be an instance of Event or subclasses in PhysicalEntity'
   }
-  all.cnt <- as.integer(.retrieveData(cnt.url, customizedMsg=msg, fromJSON=FALSE, as="text"))
+  all.cnt <- as.integer(.retrieveData(cnt.url, customMsg=msg, fromJSON=FALSE, as="text"))
   
   # set the range of entries
   if ((all) || (!all && rows > all.cnt)) rows <- all.cnt
@@ -559,7 +559,7 @@ searchQuery <- function(query, species=NULL, types=NULL, compartments=NULL,
   
   # retrieve
   check.msg <- spellCheck(query)
-  .retrieveData(url, customizedMsg=check.msg, as="text")
+  .retrieveData(url, customMsg=check.msg, as="text")
 }
 
 
