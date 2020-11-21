@@ -6,7 +6,7 @@
   # welcome message
   packageStartupMessage("Connecting...", appendLF=FALSE)
   version <- .checkVersion()
-  packageStartupMessage(paste0("welcome to Reactome v", version, "!"))
+  packageStartupMessage("welcome to Reactome v", version, "!")
 }
 
 
@@ -23,14 +23,14 @@
   if (httr::status_code(res) != 200) {
     body <- jsonlite::fromJSON(httr::content(res, "text"))
     # print custom message
-    if (!is.null(customMsg)) message(paste0(customMsg,"\n"))
+    if (!is.null(customMsg)) message(customMsg)
     
     # return error message
     if (is.na(body[["messages"]])) {
-      warning(paste0("HTTP ",body[["code"]], " - ", body[["reason"]],", path: ", 
-                     gsub(".*?ContentService", "", body[["url"]]), "\n")) 
+      warning("HTTP ",body[["code"]], " - ", body[["reason"]],", path: ", 
+               gsub(".*?ContentService", "", body[["url"]]), call.=FALSE) 
     } else {
-      warning(paste0("HTTP ", body[["code"]], " - ", body[["messages"]]), "\n")
+      warning("HTTP ", body[["code"]], " - ", body[["messages"]], call.=FALSE)
     }
     # no pass
     FALSE
@@ -87,7 +87,7 @@
   # to see what data type this species arg is by checking which column it belongs to
   species.data.type <- colnames(all.species)[apply(all.species, 2, function(col) species %in% unlist(col))]
   if (length(species.data.type) == 0) {
-    warning(paste0(species, " not listed in Reactome"))
+    stop(species, " not listed in Reactome", call.=FALSE)
   }
   # output
   species.data.type <- species.data.type[1] # in case type==c("displayName","name")

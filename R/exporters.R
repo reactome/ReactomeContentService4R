@@ -39,7 +39,7 @@ exportEventFile <- function(id, format=c("sbgn", "sbml"),
   if (writeToFile) {
     # get the current working directory if file path not specified
     if (is.null(file)) file <- file.path(getwd(), paste0(id, ".", format))
-    cat(paste0("File exported to '", file, "'...\n"))
+    message("File exported to ", sQuote(file))
     write.table(file.content, file=file, quote=FALSE, row.names=FALSE, col.names=FALSE)
   } else {
     return(file.content)
@@ -147,7 +147,7 @@ exportImage <- function(id=NULL, output=c("diagram", "fireworks", "reaction"),
   
   # write into a file if file path provided
   if (!is.null(file)) {
-    cat(paste0("Image exported to '", file, "'...\n"))
+    message("Image exported to ", sQuote(file))
     image_write(image=img, path=file, format=format, ...)
   } else {
     return(img)

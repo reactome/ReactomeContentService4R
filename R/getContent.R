@@ -117,7 +117,7 @@ getOrthology <- function(id, species) {
   species.id <- .matchSpecies(species, "dbId") #dbId only
   url <- file.path(getOption("base.address"), path, id, "species", species.id)
   # retrieve data
-  cat(paste0("Returning inferred instances of ", id, " in species ", species.name, "...\n"))
+  message("Returning inferred instances of ", sQuote(id), " in species ", sQuote(species.name), "...")
   note.msg <- "Note that only orthologous Events or Entities in a different species can be retrieved"
   .retrieveData(url, customMsg=note.msg, as="text")
 }
@@ -304,7 +304,7 @@ getPerson <- function(name=NULL, id=NULL, attributes=NULL) {
   
   # choose an id if name input only
   if (is.null(id)) {
-    cat(paste0('Matching "', name, '" with names in current data...'), "\n")
+    message('Matching ', dQuote(name), ' with names in current data...\n')
     names.df <- .listPeople(name)
     if (nrow(names.df) == 1) {
       id <- as.character(names.df$dbId)
@@ -463,8 +463,9 @@ getSchemaClass <- function(class, species=NULL, all=FALSE, rows=1000,
   if ((all) || (!all && rows > all.cnt)) rows <- all.cnt
   
   species.name <- ifelse(!is.null(species), .matchSpecies(species, "displayName"), "ALL")
-  cat(paste0("Total ", all.cnt, " entries of ", class, " with species ", species.name,
-             ", retrieving ", format(rows, scientific=FALSE), " of them...\n"))
+  message("Total ", all.cnt, " entries of ", class, " with species ", 
+          species.name, ", retrieving ", format(rows, scientific=FALSE), 
+          " of them...\n")
   
   # calculate the range of pages
   max.class.offset <- 25
