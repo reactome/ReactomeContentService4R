@@ -4,7 +4,7 @@
 \name{ReactomeContentService4R-package}
 \alias{ReactomeContentService4R}
 \alias{ReactomeContentService4R-package}
-\title{ReactomeContentService4R: R Interface for the Reactome Content Service}
+\title{ReactomeContentService4R: Interface for the Reactome Content Service}
 \description{
 Reactome is a free, open-source, open access, curated and 
     peer-reviewed knowledgebase of bio-molecular pathways. This package is to 
