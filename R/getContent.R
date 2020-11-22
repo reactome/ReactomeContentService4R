@@ -443,7 +443,7 @@ getSchemaClass <- function(class, species=NULL, all=FALSE, rows=1000,
                            minimised=FALSE, reference=FALSE) {
   # reminder
   if (reference && !class %in% c("ReferenceEntity", "ExternalOntology")) {
-    stop("Note that 'class' needs to either ReferenceEntity or ExternalOntology, and no species filter")
+    stop("Note that 'class' needs to be either ReferenceEntity or ExternalOntology, and no species filter")
   }
   
   path <- "data/schema"

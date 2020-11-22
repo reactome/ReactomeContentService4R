@@ -23,7 +23,7 @@
   if (httr::status_code(res) != 200) {
     body <- jsonlite::fromJSON(httr::content(res, "text"))
     # print custom message
-    if (!is.null(customMsg)) message(customMsg)
+    if (!is.null(customMsg)) message(customMsg, "\n")
     
     # return error message
     if (is.na(body[["messages"]])) {
