@@ -183,14 +183,17 @@ getParticipants <- function(event.id, retrieval=c("AllInstances", "PhysicalEntit
         sub.info <- all.info[[component]]
         # If it's a df, entries are all unique in the component;
         # if it's list, multiple entries exist
-        # put dataframe into a list
+        # turn dataframe into a list
         if (is.data.frame(sub.info)) sub.info <- list(sub.info)
         
         for (list in sub.info) {
           if (is.integer(list) && list %in% participants$peDbId) {
             # only an id, no other info
-            participants[participants$peDbId == list, ]$numOfEntries <- participants[participants$peDbId == list, ]$numOfEntries + 1
-            if (participants[participants$peDbId == list, ]$type == 0) participants[participants$peDbId == list, ]$type <- component
+            idx <- participants$peDbId == list
+            participants[idx, ]$numOfEntries <- participants[idx, ]$numOfEntries + 1
+            if (participants[idx, ]$type == 0) {
+              participants[idx, ]$type <- component
+            }
           } else if (is.list(list)) {
             # get the id
             if (component == "catalystActivity") {
@@ -201,17 +204,17 @@ getParticipants <- function(event.id, retrieval=c("AllInstances", "PhysicalEntit
               id <- list$dbId
             }
             
-            for (i in id) {
-              if (i %in% participants$peDbId) {
-                tmp.type <- participants[participants$peDbId == i, ]$type
-                if (tmp.type != 0) {
-                  # already has role(s)
-                  participants[participants$peDbId == i, ]$type <- paste0(tmp.type, ",", component)
-                } else {
-                  participants[participants$peDbId == i, ]$type <- component
-                  participants[participants$peDbId == i, ]$numOfEntries <- participants[participants$peDbId == i, ]$numOfEntries + 1
-                }
-              } 
+            pe.id <- id[id %in% participants$peDbId]
+            for (i in pe.id) {
+              idx <- participants$peDbId == i
+              tmp.type <- participants[idx, ]$type
+              if (tmp.type != 0) {
+                # already has role(s)
+                participants[idx, ]$type <- paste0(tmp.type, ",", component)
+              } else {
+                participants[idx, ]$type <- component
+                participants[idx, ]$numOfEntries <- participants[idx, ]$numOfEntries + 1
+              }
             }
           }
         }
