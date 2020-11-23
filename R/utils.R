@@ -10,6 +10,12 @@
 }
 
 
+## allow to use this package without attaching
+.onLoad <- function(libname, pkgname) {
+  options(base.address = "https://reactome.org/ContentService")
+}
+
+
 ## Check Reactome's current version
 .checkVersion <- function() {
   url <- file.path(getOption("base.address"), "data/database/version")
