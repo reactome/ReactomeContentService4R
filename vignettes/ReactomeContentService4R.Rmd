@@ -18,8 +18,9 @@ vignette: >
 
 [Reactome](https://reactome.org) is a free, open-source, open access, curated and peer-reviewed knowledgebase of biomolecular pathways. Knowledge in Reactome is captured as instances of the __classes__ with their associated __attributes__. The Reactome [data model](https://reactome.org/content/schema) is comprised primarily of classes of Pathways, Reactions and PhysicalEntities (e.g. proteins, small molecules) that are organized in a hierarchical manner (Pathways contain Reactions, Reactions contain PhysicalEntities). Classes have attributes that hold properties of the represented class instances, such as names, identifiers, etc.
 
-The `ReactomeContentService4R` package provides an interface to query Reactome data from the [Content Service](https://reactome.org/dev/content-service).
+The `ReactomeContentService4R` package provides an interface to query Reactome data from the [Content Service](https://reactome.org/dev/content-service). This package allows you to query Reactome's Content Service using many of the same endpoints available on the website, but formats the returned data in R Data Frames. For example, you can query all of the participants/PhysicalEntities in a Reaction by providing its stable identifier ('R-HSA-123456') to the `getParticipants("R-HSA-123456", retrieval="PhysicalEntities")` method in the package. This will return an R Data Frame that will hold the same attributes as the Content Service query `curl -X GET "https://reactome.org/ContentService/data/participants/R-HSA-123456" -H "accept: application/json"`. 
 
+Similar functionality exists for a number of other Reactome Content Service endpoints, which is outlined further below in this document. You can retrieve specific instances, or all instances within a specific Class (eg: Pathway or Complex); Generate mappings, such as PhysicalEntity-to-Events (ie. Proteins to Reactions) mappings, or non-Reactome identifiers (such as UniProt) to Events/PhysicalEntities (for example, Reactome Proteins containing UniProt identifiers) mappings; Export or view Reactome's Pathway/Reaction diagrams, and much more! 
 
 ## Installation
 
