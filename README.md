@@ -11,21 +11,24 @@ The `ReactomeContentService4R` package provides a wrapper for the Reactome Conte
 ## Installation
 ```
 # Pick one
+## from Bioconductor
+if (!requireNamespace("BiocManager")) {
+  install.packages("BiocManager")
+}
+BiocManager::install("ReactomeContentService4R")
+
+## from github
 devtools::install_github("reactome/ReactomeContentService4R")
 remotes::install_github("reactome/ReactomeContentService4R")
 ```
 
 ⚠️ If you are using [RStudio](https://rstudio.com/products/rstudio/download/) on macOS, make sure the version is __>= 1.3.1056__.
 
-
 ## Documentation
-
 - Vignette for this package: https://chilampoon.github.io/projects/ReactomeContentService4R.html
 - About the Reactome Content Service: https://reactome.org/dev/content-service
 
-
 ## Usage
-
 Fetch the information for a Reactome object:
 ```r
 library(ReactomeContentService4R)
@@ -99,4 +102,3 @@ Find more examples in the vignette!
 
 ## Feedback
 Any feedback is welcome! Feel free to open an [issue](https://github.com/reactome/ReactomeContentService4R/issues) on GitHub.
-
