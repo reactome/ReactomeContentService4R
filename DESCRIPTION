@@ -1,6 +1,6 @@
 Package: ReactomeContentService4R
 Title: Interface for the Reactome Content Service
-Version: 1.1.0
+Version: 1.0.0
 Authors@R: c(person("Chi-Lam", "Poon", role = c("aut", "cre"), 
                     email = "clpoon807@gmail.com",
                     comment = c(ORCID = "0000-0001-6298-7099")),
