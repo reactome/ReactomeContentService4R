@@ -337,10 +337,17 @@ getPerson(name = "Justin Cook")
 ```
 
 
+### Citation
+
+If you found this package useful and used in your projects, please cite [it](https://doi.org/10.7490/f1000research.1118690.1).
+```{r citation}
+citation("ReactomeContentService4R")
+```
+
+
 ## Session info
 
 ```{r sessioninfo}
 sessionInfo()
 ```
-
 
